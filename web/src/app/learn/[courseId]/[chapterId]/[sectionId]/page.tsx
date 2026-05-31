@@ -1,0 +1,192 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import type { CourseConfig, SectionData } from "@/lib/types";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { LessonView } from "@/components/content/LessonView";
+import { ProblemView } from "@/components/interactive/ProblemView";
+import { QuizView } from "@/components/interactive/QuizView";
+import { setPhase, markSectionComplete } from "@/lib/progress";
+import { ChevronRight } from "lucide-react";
+
+type Phase = "lesson" | "practice" | "quiz" | "complete";
+
+const phaseLabels: Record<Phase, string> = {
+  lesson: "Lesson",
+  practice: "Practice",
+  quiz: "Quiz",
+  complete: "Complete",
+};
+
+export default function SectionPage() {
+  const { courseId, chapterId, sectionId } = useParams<{
+    courseId: string;
+    chapterId: string;
+    sectionId: string;
+  }>();
+  const router = useRouter();
+
+  const [courseConfig, setCourseConfig] = useState<CourseConfig | null>(null);
+  const [sectionData, setSectionData] = useState<SectionData | null>(null);
+  const [phase, setPhaseState] = useState<Phase>("lesson");
+  const [loading, setLoading] = useState(true);
+  const [courseHasRecap, setCourseHasRecap] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      const [modRes, secRes, recapRes] = await Promise.all([
+        fetch(`/api/course/${courseId}`),
+        fetch(`/api/content/${courseId}/${sectionId}`),
+        fetch(`/api/recap/${courseId}`),
+      ]);
+      if (modRes.ok) setCourseConfig(await modRes.json());
+      if (secRes.ok) setSectionData(await secRes.json());
+      if (recapRes.ok) {
+        const recapMeta = await recapRes.json();
+        setCourseHasRecap(recapMeta.hasRecap ?? false);
+      }
+      setLoading(false);
+    }
+    load();
+  }, [courseId, sectionId]);
+
+  useEffect(() => {
+    setPhaseState("lesson");
+  }, [sectionId]);
+
+  const dir = courseConfig?.language === "fa" ? "rtl" : "ltr";
+
+  function advanceTo(next: Phase) {
+    setPhaseState(next);
+    setPhase(courseId, sectionId, next);
+  }
+
+  function handleLessonContinue() {
+    if (sectionData?.problems?.length) advanceTo("practice");
+    else if (sectionData?.quiz?.length) advanceTo("quiz");
+    else finishSection();
+  }
+
+  function handlePracticeComplete() {
+    if (sectionData?.quiz?.length) advanceTo("quiz");
+    else finishSection();
+  }
+
+  function handleQuizComplete(score: number) {
+    if (score >= 70) {
+      markSectionComplete(courseId, sectionId, score);
+      finishSection();
+    }
+  }
+
+  function finishSection() {
+    advanceTo("complete");
+    setTimeout(() => navigateToNext(), 1900);
+  }
+
+  function navigateToNext() {
+    if (!courseConfig) return;
+    const allSections = courseConfig.chapters.flatMap((c) => c.sections);
+    const idx = allSections.findIndex((s) => s.id === sectionId);
+    if (idx !== -1 && idx + 1 < allSections.length) {
+      const next = allSections[idx + 1];
+      router.push(`/learn/${courseId}/${next.chapterId}/${next.id}`);
+    } else {
+      router.push("/");
+    }
+  }
+
+  const currentChapter = courseConfig?.chapters.find((c) => c.id === chapterId);
+  const currentSection = courseConfig?.chapters
+    .flatMap((c) => c.sections)
+    .find((s) => s.id === sectionId);
+
+  if (loading) {
+    return (
+      <div className="spinner-page">
+        <div className="spinner" />
+      </div>
+    );
+  }
+
+  if (!courseConfig || !sectionData) {
+    return (
+      <div className="spinner-page" style={{ color: "var(--ink-3)", fontSize: 16 }}>
+        Section not found.
+      </div>
+    );
+  }
+
+  const hasPractice = (sectionData.problems?.length ?? 0) > 0;
+  const hasQuiz = (sectionData.quiz?.length ?? 0) > 0;
+
+  const lessonContinueLabel =
+    hasPractice
+      ? dir === "rtl" ? "ادامه به تمرین" : "Continue to Practice"
+      : hasQuiz
+      ? dir === "rtl" ? "ادامه به آزمون" : "Continue to Quiz"
+      : dir === "rtl" ? "تکمیل بخش" : "Complete section";
+
+  return (
+    <div className="app-shell has-sidebar" dir={dir}>
+      <Sidebar course={courseConfig} currentSectionId={sectionId} dir={dir} hasRecap={courseHasRecap} />
+
+      <main className="app-main">
+        <div className="section-page">
+          <div className="breadcrumb">
+            <span className="crumb-chapter">{currentChapter?.title}</span>
+            <ChevronRight size={15} className="crumb-sep" />
+            <span className="crumb-section">{currentSection?.title}</span>
+            <span className={`phase-badge${phase === "complete" ? " phase-complete" : ""}`}>
+              {phaseLabels[phase]}
+            </span>
+          </div>
+
+          <h1 className="section-title">{currentSection?.title}</h1>
+
+          {phase === "lesson" && (
+            <LessonView
+              markdown={sectionData.lessonMarkdown}
+              dir={dir}
+              continueLabel={lessonContinueLabel}
+              onContinue={handleLessonContinue}
+            />
+          )}
+
+          {phase === "practice" && (
+            <ProblemView
+              problems={sectionData.problems}
+              dir={dir}
+              continueLabel={hasQuiz
+                ? (dir === "rtl" ? "ادامه به آزمون" : "Continue to Quiz")
+                : (dir === "rtl" ? "تکمیل بخش" : "Complete section")}
+              onComplete={handlePracticeComplete}
+            />
+          )}
+
+          {phase === "quiz" && (
+            <QuizView
+              questions={sectionData.quiz}
+              dir={dir}
+              onComplete={handleQuizComplete}
+            />
+          )}
+
+          {phase === "complete" && (
+            <div className="complete-state">
+              <div className="complete-emoji">🎉</div>
+              <div className="complete-head">
+                {dir === "rtl" ? "بخش تکمیل شد!" : "Section Complete!"}
+              </div>
+              <div className="complete-sub">
+                {dir === "rtl" ? "در حال رفتن به بخش بعدی…" : "Moving to the next section…"}
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}

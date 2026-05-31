@@ -1,0 +1,16 @@
+## CLI build artifacts
+cli/tutor
+cli/tutor.exe
+
+## Next.js
+web/.next/
+web/node_modules/
+web/.env*.local
+
+## macOS
+.DS_Store
+
+## Editor
+.idea/
+.vscode/
+*.swp
