@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { getCourseSummaries } from "@/lib/courses";
 import type { CourseSummary } from "@/lib/types";

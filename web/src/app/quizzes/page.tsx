@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { getQuizSummaries } from "@/lib/quizzes";
 import type { QuizConfig } from "@/lib/types";

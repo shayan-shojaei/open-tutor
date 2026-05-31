@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { getFlashCardDecks } from "@/lib/flashcards";
 import type { FlashCardDeck } from "@/lib/types";
