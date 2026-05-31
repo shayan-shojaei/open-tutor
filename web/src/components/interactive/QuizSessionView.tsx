@@ -33,23 +33,39 @@ export function QuizSessionView({
   const BackArrow = isRtl ? ArrowRight : ArrowLeft;
 
   const [pos, setPos] = useState(0);
-  const [answerState, setAnswerState] = useState<AnswerState>({ kind: "unanswered" });
-  const [writtenText, setWrittenText] = useState("");
+  // Per-question state so navigating back restores the prior answer/selection.
+  const [answers, setAnswers] = useState<AnswerState[]>(() =>
+    questions.map(() => ({ kind: "unanswered" }))
+  );
+  const [writtenTexts, setWrittenTexts] = useState<string[]>(() => questions.map(() => ""));
   const [done, setDone] = useState(false);
-
-  // Score tracking
-  const [mcCorrect, setMcCorrect] = useState(0);
-  const [mcTotal, setMcTotal] = useState(0);
-  const [writtenGot, setWrittenGot] = useState(0);
-  const [writtenTotal, setWrittenTotal] = useState(0);
 
   const total = questions.length;
   const question = questions[pos];
   const pct = Math.round((pos / total) * 100);
 
+  const answerState = answers[pos];
+  const writtenText = writtenTexts[pos];
+
+  // Scores are derived from the per-question answers so revisiting a question
+  // never double-counts (answers are locked once given).
+  const mcAnswers = answers.filter(
+    (a): a is Extract<AnswerState, { kind: "mc-answered" }> => a.kind === "mc-answered"
+  );
+  const mcTotal = mcAnswers.length;
+  const mcCorrect = mcAnswers.filter((a) => a.correct).length;
+  const writtenTotal = answers.filter(
+    (a) => a.kind === "written-submitted" || a.kind === "written-rated"
+  ).length;
+  const writtenGot = answers.filter(
+    (a) => a.kind === "written-rated" && a.gotIt
+  ).length;
+
+  function setAnswerAt(state: AnswerState) {
+    setAnswers((prev) => prev.map((a, i) => (i === pos ? state : a)));
+  }
+
   function advance() {
-    setAnswerState({ kind: "unanswered" });
-    setWrittenText("");
     const next = pos + 1;
     if (next >= total) {
       setDone(true);
@@ -58,34 +74,30 @@ export function QuizSessionView({
     }
   }
 
+  function goBack() {
+    setPos((p) => Math.max(0, p - 1));
+  }
+
   function handleMcSelect(index: number) {
     if (answerState.kind !== "unanswered") return;
     const correct = index === question.correctIndex;
-    if (correct) setMcCorrect((n) => n + 1);
-    setMcTotal((n) => n + 1);
-    setAnswerState({ kind: "mc-answered", selectedIndex: index, correct });
+    setAnswerAt({ kind: "mc-answered", selectedIndex: index, correct });
   }
 
   function handleWrittenSubmit() {
     if (answerState.kind !== "unanswered") return;
-    setWrittenTotal((n) => n + 1);
-    setAnswerState({ kind: "written-submitted" });
+    setAnswerAt({ kind: "written-submitted" });
   }
 
   function handleWrittenRate(gotIt: boolean) {
-    if (gotIt) setWrittenGot((n) => n + 1);
-    setAnswerState({ kind: "written-rated", gotIt });
+    setAnswerAt({ kind: "written-rated", gotIt });
   }
 
   function restart() {
     setPos(0);
-    setAnswerState({ kind: "unanswered" });
-    setWrittenText("");
+    setAnswers(questions.map(() => ({ kind: "unanswered" })));
+    setWrittenTexts(questions.map(() => ""));
     setDone(false);
-    setMcCorrect(0);
-    setMcTotal(0);
-    setWrittenGot(0);
-    setWrittenTotal(0);
   }
 
   const backBtn = (
@@ -213,7 +225,9 @@ export function QuizSessionView({
               dir={dir}
               disabled={writtenSubmitted}
               value={writtenText}
-              onChange={(e) => setWrittenText(e.target.value)}
+              onChange={(e) =>
+                setWrittenTexts((prev) => prev.map((t, i) => (i === pos ? e.target.value : t)))
+              }
               placeholder={L("Type your answer here…", "پاسخ خود را اینجا بنویسید…")}
               rows={4}
             />
@@ -283,15 +297,19 @@ export function QuizSessionView({
           </div>
         )}
 
-        {showNextBtn && (
-          <div className="qz-next-row">
+        <div className="qz-nav-row">
+          <button className="btn-ghost" onClick={goBack} disabled={pos === 0}>
+            <BackArrow size={16} />
+            <span>{L("Previous", "سوال قبلی")}</span>
+          </button>
+          {showNextBtn && (
             <button className="continue-btn" onClick={advance}>
               {pos + 1 < total
                 ? L("Next question →", "سوال بعدی ←")
                 : L("Finish quiz →", "پایان آزمون ←")}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

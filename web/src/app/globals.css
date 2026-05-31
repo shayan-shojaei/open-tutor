@@ -318,6 +318,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transition: background .15s, border-color .15s;
 }
 .btn-ghost:hover { background: var(--surface-sunk); border-color: var(--ink-3); }
+.btn-ghost:disabled { opacity: .4; cursor: not-allowed; }
+.btn-ghost:disabled:hover { background: var(--surface); border-color: var(--line-2); }
+
+/* Quiz nav row: Previous on the leading edge, Next on the trailing edge */
+.phase-actions.quiz-nav { justify-content: space-between; }
 
 /* ---- Markdown / lesson body ---- */
 .md { color: var(--ink); }
@@ -647,11 +652,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .qz-rate-btn.got:hover { border-color: var(--good); background: var(--good-tint); color: var(--good); }
 .qz-rate-btn.miss:hover { border-color: var(--bad); background: var(--bad-tint); color: var(--bad); }
 
-.qz-next-row {
-  display: flex; justify-content: flex-end; margin-top: 24px;
-  padding-top: 20px; border-top: 1px solid var(--line);
+.qz-nav-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line);
 }
-[dir="rtl"] .qz-next-row { justify-content: flex-start; }
+.qz-nav-row .continue-btn { margin-inline-start: auto; }
 
 /* ===================== LOADING SPINNER ===================== */
 .spinner-page {
