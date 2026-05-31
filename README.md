@@ -8,6 +8,28 @@ Built entirely with [Claude Code](https://claude.ai/code).
 
 ---
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center" colspan="2"><img src="docs/screenshots/courses-list.png" width="720"/><br/><sub>Course library</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/calc3-course.png" width="360"/><br/><sub>Calculus 3 — lesson</sub></td>
+    <td align="center"><img src="docs/screenshots/golang-course.png" width="360"/><br/><sub>Go Load Balancer — lesson</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/calc3-practice.png" width="360"/><br/><sub>Calculus 3 — practice</sub></td>
+    <td align="center"><img src="docs/screenshots/golang-practice.png" width="360"/><br/><sub>Go Load Balancer — practice</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/calc3-quiz.png" width="360"/><br/><sub>Calculus 3 — quiz</sub></td>
+    <td align="center"><img src="docs/screenshots/golang-quiz.png" width="360"/><br/><sub>Go Load Balancer — quiz</sub></td>
+  </tr>
+</table>
+
+---
+
 ## Quick Start
 
 ### Recommended — one-liner install
