@@ -1,14 +1,46 @@
 # Open Tutor
 
-A self-hosted interactive learning environment. Install once, run anywhere, share modules on GitHub.
+A self-hosted, interactive learning environment you run entirely on your own machine.
+Install it once, point it at any module repository, and get a clean web UI for courses,
+flashcard decks, and quizzes — no accounts, no cloud, no tracking.
+
+Built entirely with [Claude Code](https://claude.ai/code).
+
+---
 
 ## Quick Start
 
-```bash
-# 1. Install the CLI (download from Releases, or build from source)
-go install github.com/shayan-shojaei/open-tutor/cli@latest
+### Recommended — one-liner install
 
-# 2. Initialize your local tutor directory (~/.tutor/)
+```bash
+curl -fsSL https://raw.githubusercontent.com/shayan-shojaei/open-tutor/main/install.sh | bash
+```
+
+This script will:
+1. Detect your OS and architecture
+2. Download the latest `tutor` CLI binary to `/usr/local/bin`
+3. Run `tutor init` to create `~/.tutor/`
+4. Run `tutor install` to download the latest web app
+
+Then start the app:
+
+```bash
+tutor start          # http://localhost:3000
+tutor start --port 8080
+```
+
+> **Pin a version** — set `TUTOR_VERSION=v1.2.3` before piping to bash if you need a
+> specific release.
+
+---
+
+### Manual install
+
+```bash
+# 1. Download the CLI for your platform from the Releases page and put it on $PATH
+#    (linux-amd64 | darwin-amd64 | darwin-arm64 | windows-amd64)
+
+# 2. Initialise your local tutor directory (~/.tutor/)
 tutor init
 
 # 3. Download the latest web app
@@ -16,12 +48,9 @@ tutor install
 
 # 4. Start (default port 3000)
 tutor start
-
-# Optional: choose a port
-tutor start --port 8080
 ```
 
-Open `http://localhost:3000` in your browser.
+---
 
 ## Configuration
 
@@ -34,7 +63,9 @@ Open `http://localhost:3000` in your browser.
 }
 ```
 
-The `port` here is the default; `--port` always takes precedence.
+`--port` always takes precedence over the value in the file.
+
+---
 
 ## Installing Modules
 
@@ -80,6 +111,8 @@ tutor module list
 }
 ```
 
+---
+
 ## Creating Modules with Claude Code
 
 Open this project in Claude Code and use the built-in skills:
@@ -93,6 +126,8 @@ Open this project in Claude Code and use the built-in skills:
 | `/course-images` | Finds and inserts relevant diagrams from Wikimedia Commons |
 
 All skills write directly to `~/.tutor/modules/` and content appears immediately when you reload the app.
+
+---
 
 ## Module Format
 
@@ -125,6 +160,8 @@ All skills write directly to `~/.tutor/modules/` and content appears immediately
 
 Full schema definitions are in `web/src/lib/types.ts`.
 
+---
+
 ## CLI Reference
 
 ```
@@ -144,6 +181,8 @@ tutor repo remove <alias-or-url>         Unregister a repo
 tutor repo update                        Refresh manifest cache
 ```
 
+---
+
 ## Development
 
 ```bash
@@ -153,6 +192,8 @@ cd web && npm install && npm run dev
 # CLI
 cd cli && go build -o tutor . && ./tutor --help
 ```
+
+---
 
 ## License
 

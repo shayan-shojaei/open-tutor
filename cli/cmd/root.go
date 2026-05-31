@@ -19,6 +19,7 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(stopCmd)
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(moduleCmd)
 	rootCmd.AddCommand(repoCmd)

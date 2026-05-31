@@ -17,7 +17,7 @@ RESET := \033[0m
 .DEFAULT_GOAL := help
 
 .PHONY: help build build-cli build-web web-deps test \
-        dev package deploy-web init local-deploy start install clean
+        dev package deploy-web init local-deploy start start-fg stop install clean
 
 help: ## Show available targets
 	@echo ""
@@ -77,9 +77,17 @@ local-deploy: init deploy-web ## Full local setup: init ~/.tutor/ + deploy web a
 	@echo ""
 	@echo "$(GREEN)$(BOLD)All set.$(RESET) Run $(CYAN)make start$(RESET) or $(CYAN)./cli/tutor start$(RESET)"
 
-start: build-cli ## Build CLI and start the web app (PORT=3000)
+start: build-cli ## Build CLI and start the web app detached (PORT=3000)
 	@echo "$(BOLD)Starting Open Tutor on port $(PORT)...$(RESET)"
 	./$(BIN) start --port $(PORT)
+
+start-fg: build-cli ## Build CLI and start the web app in the foreground (PORT=3000)
+	@echo "$(BOLD)Starting Open Tutor on port $(PORT) (foreground)...$(RESET)"
+	./$(BIN) start --port $(PORT) --foreground
+
+stop: build-cli ## Stop the running Open Tutor web app
+	@echo "$(BOLD)Stopping Open Tutor...$(RESET)"
+	./$(BIN) stop
 
 # ─── Release packaging (mirrors what CI does on a tag push) ──────────────────
 

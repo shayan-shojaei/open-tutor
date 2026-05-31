@@ -39,6 +39,14 @@ func CacheDir() string {
 	return filepath.Join(TutorDir(), "cache")
 }
 
+func PidFile() string {
+	return filepath.Join(TutorDir(), "tutor.pid")
+}
+
+func LogFile() string {
+	return filepath.Join(TutorDir(), "tutor.log")
+}
+
 func Load() (*Config, error) {
 	data, err := os.ReadFile(ConfigPath())
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 )
 
 var startPort int
+var startForeground bool
 
 var startCmd = &cobra.Command{
 	Use:   "start",
@@ -23,10 +24,11 @@ var startCmd = &cobra.Command{
 		if cmd.Flags().Changed("port") {
 			port = startPort
 		}
-		return server.Start(config.AppDir(), config.ModulesDir(), port)
+		return server.Start(config.AppDir(), config.ModulesDir(), port, !startForeground)
 	},
 }
 
 func init() {
 	startCmd.Flags().IntVar(&startPort, "port", 3000, "port to serve on")
+	startCmd.Flags().BoolVarP(&startForeground, "foreground", "f", false, "run in the foreground (don't detach)")
 }
