@@ -15,37 +15,45 @@ const LETTERS = ["A", "B", "C", "D", "E"];
 
 export function QuizView({ questions, dir, onComplete }: QuizViewProps) {
   const [index, setIndex] = useState(0);
-  const [picked, setPicked] = useState<number | null>(null);
-  const [correctCount, setCorrectCount] = useState(0);
+  // Per-question picks so navigating back restores the prior selection.
+  const [picks, setPicks] = useState<(number | null)[]>(() => questions.map(() => null));
   const [done, setDone] = useState(false);
 
   const L = (en: string, fa: string) => (dir === "rtl" ? fa : en);
   const FwdIcon = dir === "rtl" ? ArrowLeft : ArrowRight;
+  const BackIcon = dir === "rtl" ? ArrowRight : ArrowLeft;
 
   const q = questions[index];
+  const picked = picks[index];
   const answered = picked !== null;
+  // Derived from picks so revisiting a question never double-counts.
+  const correctCount = picks.reduce<number>(
+    (acc, p, i) => acc + (p !== null && p === questions[i].correctIndex ? 1 : 0),
+    0
+  );
   const score = Math.round((correctCount / questions.length) * 100);
   const passed = score >= 70;
 
   function pick(i: number) {
     if (answered) return;
-    setPicked(i);
-    if (i === q.correctIndex) setCorrectCount((c) => c + 1);
+    setPicks((prev) => prev.map((p, idx) => (idx === index ? i : p)));
   }
 
   function next() {
     if (index + 1 < questions.length) {
       setIndex(index + 1);
-      setPicked(null);
     } else {
       setDone(true);
     }
   }
 
+  function back() {
+    setIndex((i) => Math.max(0, i - 1));
+  }
+
   function retry() {
     setIndex(0);
-    setPicked(null);
-    setCorrectCount(0);
+    setPicks(questions.map(() => null));
     setDone(false);
   }
 
@@ -90,7 +98,7 @@ export function QuizView({ questions, dir, onComplete }: QuizViewProps) {
         {questions.map((_, i) => (
           <span
             key={i}
-            className={`qdot${i < index ? " done" : ""}${i === index ? " current" : ""}`}
+            className={`qdot${picks[i] !== null ? " done" : ""}${i === index ? " current" : ""}`}
           />
         ))}
         <span className="quiz-count">
@@ -139,8 +147,12 @@ export function QuizView({ questions, dir, onComplete }: QuizViewProps) {
         </div>
       )}
 
-      {answered && (
-        <div className="phase-actions">
+      <div className="phase-actions quiz-nav">
+        <button className="btn-ghost" onClick={back} disabled={index === 0}>
+          <BackIcon size={18} />
+          <span>{L("Previous", "پرسش قبلی")}</span>
+        </button>
+        {answered && (
           <button className="continue-btn" onClick={next}>
             <span>
               {index + 1 < questions.length
@@ -149,8 +161,8 @@ export function QuizView({ questions, dir, onComplete }: QuizViewProps) {
             </span>
             <FwdIcon size={18} />
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
