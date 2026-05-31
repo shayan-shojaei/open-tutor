@@ -27,7 +27,7 @@ jobs:
       - name: Package standalone output
         run: |
           cp -r .next/static .next/standalone/.next/static
-          cp -r public .next/standalone/public
+          [ -d public ] && cp -r public .next/standalone/public || mkdir -p .next/standalone/public
           tar -czf ../web-standalone-${{ github.ref_name }}.tar.gz -C .next/standalone .
 
       - name: Generate checksum
