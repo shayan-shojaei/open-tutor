@@ -101,6 +101,19 @@ tutor start
 
 Modules are courses, flashcard decks, and quizzes. They live in `~/.tutor/modules/`.
 
+### Sample modules
+
+The quickest way to get started is the official sample collection — two full courses
+(Calculus 3 and Building a Load Balancer in Go) with lessons, practice problems, and quizzes:
+
+```bash
+tutor repo add https://github.com/shayan-shojaei/open-tutor-sample-modules
+tutor module install open-tutor-sample-modules calc3
+tutor module install open-tutor-sample-modules go-load-balancer
+```
+
+Browse the collection: **[open-tutor-sample-modules](https://github.com/shayan-shojaei/open-tutor-sample-modules)**
+
 ### From a GitHub repository
 
 ```bash
