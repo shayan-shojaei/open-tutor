@@ -30,8 +30,7 @@ var repoAddCmd = &cobra.Command{
 				return fmt.Errorf("repo already registered: %s", repoURL)
 			}
 		}
-		fmt.Printf("Fetching manifest from %s...\n", repoURL)
-		manifest, err := gh.FetchManifest(repoURL)
+		manifest, err := gh.FetchManifest(config.CacheDir(), repoURL)
 		if err != nil {
 			return err
 		}
@@ -106,11 +105,8 @@ var repoUpdateCmd = &cobra.Command{
 			return err
 		}
 		for _, r := range cfg.Repos {
-			fmt.Printf("Updating %s...\n", r.Alias)
-			if _, err := gh.FetchManifest(r.URL); err != nil {
-				fmt.Printf("  warning: %v\n", err)
-			} else {
-				fmt.Printf("  ok\n")
+			if _, err := gh.FetchManifest(config.CacheDir(), r.URL); err != nil {
+				fmt.Printf("warning: %s: %v\n", r.Alias, err)
 			}
 		}
 		return nil

@@ -3,6 +3,8 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -19,16 +21,15 @@ type Manifest struct {
 	Modules     []ModuleEntry `json:"modules"`
 }
 
-// FetchManifest fetches tutor-manifest.json from the default branch of a GitHub repo URL.
-func FetchManifest(repoURL string) (*Manifest, error) {
-	owner, repo, err := parseRepoURL(repoURL)
+// FetchManifest clones or updates the repo and reads its tutor-manifest.json.
+func FetchManifest(cacheRoot, repoURL string) (*Manifest, error) {
+	dir, err := EnsureRepo(cacheRoot, repoURL)
 	if err != nil {
 		return nil, err
 	}
-	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/HEAD/tutor-manifest.json", owner, repo)
-	data, err := downloadBytes(rawURL)
+	data, err := os.ReadFile(filepath.Join(dir, "tutor-manifest.json"))
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch tutor-manifest.json from %s: %w", repoURL, err)
+		return nil, fmt.Errorf("%s does not contain a tutor-manifest.json", repoURL)
 	}
 	var m Manifest
 	if err := json.Unmarshal(data, &m); err != nil {
@@ -37,31 +38,60 @@ func FetchManifest(repoURL string) (*Manifest, error) {
 	return &m, nil
 }
 
-// DownloadModule downloads a single module directory from a GitHub repo into destDir.
-func DownloadModule(repoURL, moduleType, moduleID, destDir string) error {
-	owner, repo, err := parseRepoURL(repoURL)
+// DownloadModule copies a module directory out of a (already cloned) repo into destDir.
+func DownloadModule(cacheRoot, repoURL, moduleType, moduleID, destDir string) error {
+	dir, err := EnsureRepo(cacheRoot, repoURL)
 	if err != nil {
 		return err
 	}
-	// Use the GitHub API to get a zip archive of just the subdirectory
-	// by downloading the full repo zip and extracting the relevant path.
-	zipURL := fmt.Sprintf("https://github.com/%s/%s/archive/HEAD.zip", owner, repo)
-	fmt.Printf("Downloading repository archive from %s/%s...\n", owner, repo)
-	data, err := downloadBytes(zipURL)
-	if err != nil {
-		return err
+	src := filepath.Join(dir, moduleType+"s", moduleID)
+	if _, err := os.Stat(src); os.IsNotExist(err) {
+		return fmt.Errorf("module %q not found in repository (looked for %s)", moduleID, src)
 	}
-	prefix := fmt.Sprintf("%s-HEAD/%s/%s/", repo, moduleType+"s", moduleID)
-	return extractZipSubdir(data, prefix, destDir)
+	return copyDir(src, destDir)
 }
 
-func parseRepoURL(url string) (owner, repo string, err error) {
-	url = strings.TrimSuffix(url, ".git")
-	url = strings.TrimPrefix(url, "https://github.com/")
-	url = strings.TrimPrefix(url, "http://github.com/")
-	parts := strings.Split(url, "/")
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("invalid GitHub repo URL: %s (expected https://github.com/owner/repo)", url)
+func copyDir(src, dst string) error {
+	return filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, _ := filepath.Rel(src, path)
+		target := filepath.Join(dst, rel)
+		if d.IsDir() {
+			return os.MkdirAll(target, 0755)
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(target, data, 0644)
+	})
+}
+
+// parseRepoURL accepts HTTPS and SSH GitHub URLs:
+//
+//	https://github.com/owner/repo
+//	http://github.com/owner/repo
+//	git@github.com:owner/repo
+//	git@github.com:owner/repo.git
+func parseRepoURL(rawURL string) (owner, repo string, err error) {
+	s := strings.TrimSuffix(rawURL, ".git")
+
+	// SSH format: git@github.com:owner/repo
+	if strings.HasPrefix(s, "git@github.com:") {
+		s = strings.TrimPrefix(s, "git@github.com:")
+	} else {
+		s = strings.TrimPrefix(s, "https://github.com/")
+		s = strings.TrimPrefix(s, "http://github.com/")
+	}
+
+	parts := strings.SplitN(s, "/", 2)
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		return "", "", fmt.Errorf(
+			"invalid GitHub repo URL %q\nAccepted formats:\n  https://github.com/owner/repo\n  git@github.com:owner/repo",
+			rawURL,
+		)
 	}
 	return parts[0], parts[1], nil
 }

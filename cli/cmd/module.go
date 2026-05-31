@@ -88,8 +88,7 @@ var moduleInstallCmd = &cobra.Command{
 			}
 		}
 
-		fmt.Printf("Fetching manifest from %s...\n", repoURL)
-		manifest, err := gh.FetchManifest(repoURL)
+		manifest, err := gh.FetchManifest(config.CacheDir(), repoURL)
 		if err != nil {
 			return err
 		}
@@ -115,7 +114,7 @@ var moduleInstallCmd = &cobra.Command{
 		if err := os.MkdirAll(destDir, 0755); err != nil {
 			return err
 		}
-		if err := gh.DownloadModule(repoURL, found.Type, moduleID, destDir); err != nil {
+		if err := gh.DownloadModule(config.CacheDir(), repoURL, found.Type, moduleID, destDir); err != nil {
 			return err
 		}
 
@@ -175,7 +174,7 @@ var moduleSearchCmd = &cobra.Command{
 		fmt.Fprintln(w, "REPO\tTYPE\tID\tTITLE")
 		found := 0
 		for _, r := range cfg.Repos {
-			manifest, err := gh.FetchManifest(r.URL)
+			manifest, err := gh.FetchManifest(config.CacheDir(), r.URL)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "warning: could not fetch %s: %v\n", r.Alias, err)
 				continue
