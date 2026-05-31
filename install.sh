@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO="shayan-shojaei/open-tutor"
-INSTALL_DIR="/usr/local/bin"
+INSTALL_DIR="${TUTOR_INSTALL_DIR:-$HOME/.local/bin}"
 BINARY_NAME="tutor"
 
 # ── helpers ────────────────────────────────────────────────────────────────────
@@ -73,12 +73,15 @@ main() {
   chmod +x "$tmp"
 
   info "Installing to ${INSTALL_DIR}/${BINARY_NAME}..."
-  if [[ -w "$INSTALL_DIR" ]]; then
-    mv "$tmp" "${INSTALL_DIR}/${BINARY_NAME}"
-  else
-    sudo mv "$tmp" "${INSTALL_DIR}/${BINARY_NAME}"
-  fi
+  mkdir -p "$INSTALL_DIR"
+  mv "$tmp" "${INSTALL_DIR}/${BINARY_NAME}"
   ok "Installed tutor $(${INSTALL_DIR}/${BINARY_NAME} --version 2>/dev/null || echo "$version")"
+
+  if [[ ":$PATH:" != *":${INSTALL_DIR}:"* ]]; then
+    printf '\n  \033[1;33mNote:\033[0m %s is not on your PATH.\n' "${INSTALL_DIR}"
+    printf '  Add this to your shell profile (~/.bashrc, ~/.zshrc, etc.):\n\n'
+    printf '    export PATH="$HOME/.local/bin:$PATH"\n\n'
+  fi
 
   info "Initialising tutor directory..."
   "${INSTALL_DIR}/${BINARY_NAME}" init
@@ -86,9 +89,7 @@ main() {
   info "Downloading web app..."
   "${INSTALL_DIR}/${BINARY_NAME}" install
 
-  echo ""
-  echo "  All done! Run \033[1mtutor start\033[0m to launch Open Tutor."
-  echo ""
+  printf '\n  All done! Run \033[1mtutor start\033[0m to launch Open Tutor.\n\n'
 }
 
 main "$@"

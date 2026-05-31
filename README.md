@@ -6,6 +6,8 @@ flashcard decks, and quizzes — no accounts, no cloud, no tracking.
 
 Built entirely with [Claude Code](https://claude.ai/code).
 
+Sample modules: **[open-tutor-sample-modules](https://github.com/shayan-shojaei/open-tutor-sample-modules)**
+
 📚 **Courses** with structured chapters, rich lessons, and a sidebar that tracks your progress  
 🧮 **Math & code** rendered beautifully — LaTeX equations and syntax-highlighted code blocks  
 ✏️ **Practice problems** with expandable solutions after each lesson  
@@ -48,9 +50,12 @@ curl -fsSL https://raw.githubusercontent.com/shayan-shojaei/open-tutor/main/inst
 
 This script will:
 1. Detect your OS and architecture
-2. Download the latest `tutor` CLI binary to `/usr/local/bin`
+2. Download the latest `tutor` CLI binary to `~/.local/bin` (no `sudo` required)
 3. Run `tutor init` to create `~/.tutor/`
 4. Run `tutor install` to download the latest web app
+
+> **Custom install dir** — set `TUTOR_INSTALL_DIR=/usr/local/bin` before piping to bash
+> if you'd rather install system-wide (requires `sudo` access to that directory).
 
 Then start the app:
 
