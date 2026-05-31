@@ -6,6 +6,36 @@ flashcard decks, and quizzes — no accounts, no cloud, no tracking.
 
 Built entirely with [Claude Code](https://claude.ai/code).
 
+📚 **Courses** with structured chapters, rich lessons, and a sidebar that tracks your progress  
+🧮 **Math & code** rendered beautifully — LaTeX equations and syntax-highlighted code blocks  
+✏️ **Practice problems** with expandable solutions after each lesson  
+🧠 **Per-section quizzes** that unlock the next section on a passing score  
+🔁 **Recaps** — condensed summaries and fresh quizzes for any course you've finished  
+🃏 **Flashcard decks** for active recall  
+🧩 **Fully modular** — every course, deck, and quiz is a folder you can add, remove, or share
+
+---
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center" colspan="2"><img src="docs/screenshots/courses-list.png" width="720"/><br/><sub>Course library</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/calc3-course.png" width="360"/><br/><sub>Calculus 3 — lesson</sub></td>
+    <td align="center"><img src="docs/screenshots/golang-course.png" width="360"/><br/><sub>Go Load Balancer — lesson</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/calc3-practice.png" width="360"/><br/><sub>Calculus 3 — practice</sub></td>
+    <td align="center"><img src="docs/screenshots/golang-practice.png" width="360"/><br/><sub>Go Load Balancer — practice</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/calc3-quiz.png" width="360"/><br/><sub>Calculus 3 — quiz</sub></td>
+    <td align="center"><img src="docs/screenshots/golang-quiz.png" width="360"/><br/><sub>Go Load Balancer — quiz</sub></td>
+  </tr>
+</table>
+
 ---
 
 ## Quick Start
