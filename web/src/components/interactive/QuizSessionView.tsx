@@ -276,11 +276,11 @@ export function QuizSessionView({
                 <div className="qz-rate-btns">
                   <button className="qz-rate-btn got" onClick={() => handleWrittenRate(true)}>
                     <Check size={16} />
-                    {L("Got it ✓", "بلد بودم ✓")}
+                    {L("Got it", "بلد بودم")}
                   </button>
                   <button className="qz-rate-btn miss" onClick={() => handleWrittenRate(false)}>
                     <X size={16} />
-                    {L("Didn't get it ✗", "بلد نبودم ✗")}
+                    {L("Didn't get it", "بلد نبودم")}
                   </button>
                 </div>
               </div>

@@ -6,7 +6,7 @@ import type { CourseConfig, SectionData } from "@/lib/types";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { LessonView } from "@/components/content/LessonView";
 import { QuizView } from "@/components/interactive/QuizView";
-import { ChevronRight, ArrowRight, ArrowLeft, Menu } from "lucide-react";
+import { ChevronRight, ArrowRight, ArrowLeft, Menu, CheckCircle2 } from "lucide-react";
 import { apiUrl } from "@/lib/api-url";
 
 type Phase = "summary" | "quiz" | "done";
@@ -142,7 +142,7 @@ export default function RecapSectionPage() {
 
           {phase === "done" && (
             <div className="complete-state">
-              <div className="complete-emoji">✓</div>
+              <div className="complete-emoji"><CheckCircle2 size={64} /></div>
               <div className="complete-head">
                 {dir === "rtl" ? "بخش مرور شد!" : "Section Reviewed!"}
               </div>

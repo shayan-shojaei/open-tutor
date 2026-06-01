@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BookOpen } from "lucide-react";
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -14,7 +15,7 @@ export default function NavBar() {
     <header className="navbar">
       <div className="navbar-inner">
         <Link href="/" className="brand">
-          <span className="brand-mark" aria-hidden="true">📚</span>
+          <span className="brand-mark" aria-hidden="true"><BookOpen size={22} /></span>
           <span className="brand-name">Open Tutor</span>
         </Link>
         <nav className="nav-pills">

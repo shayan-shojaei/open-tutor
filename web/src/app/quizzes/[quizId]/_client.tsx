@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { SearchX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { QuizConfig, StandaloneQuizQuestion } from "@/lib/types";
 import { QuizSessionView } from "@/components/interactive/QuizSessionView";
@@ -38,7 +39,7 @@ export default function QuizSessionPage({ params }: { params: { quizId: string }
   if (notFound || !data) {
     return (
       <div className="app-main spinner-page" style={{ flexDirection: "column", gap: 16 }}>
-        <p style={{ fontSize: 48 }}>🔍</p>
+        <SearchX size={48} color="var(--ink-3)" />
         <p style={{ fontSize: 20, fontWeight: 600, color: "var(--ink)" }}>Quiz not found</p>
         <button className="fc-back" style={{ marginBottom: 0 }} onClick={() => router.push("/quizzes")}>
           ← Back to Quizzes

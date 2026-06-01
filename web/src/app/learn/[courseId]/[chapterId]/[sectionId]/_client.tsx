@@ -8,7 +8,7 @@ import { LessonView } from "@/components/content/LessonView";
 import { ProblemView } from "@/components/interactive/ProblemView";
 import { QuizView } from "@/components/interactive/QuizView";
 import { setPhase, markSectionComplete } from "@/lib/progress";
-import { ChevronRight, Menu } from "lucide-react";
+import { ChevronRight, Menu, PartyPopper } from "lucide-react";
 import { apiUrl } from "@/lib/api-url";
 
 type Phase = "lesson" | "practice" | "quiz" | "complete";
@@ -189,7 +189,7 @@ export default function SectionPage() {
 
           {phase === "complete" && (
             <div className="complete-state">
-              <div className="complete-emoji">🎉</div>
+              <div className="complete-emoji"><PartyPopper size={64} /></div>
               <div className="complete-head">
                 {dir === "rtl" ? "بخش تکمیل شد!" : "Section Complete!"}
               </div>

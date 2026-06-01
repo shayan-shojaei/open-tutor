@@ -1,6 +1,7 @@
 export const dynamic = process.env.NEXT_PUBLIC_DEMO === "true" ? "auto" : "force-dynamic";
 
 import Link from "next/link";
+import { BookOpen, Sparkles } from "lucide-react";
 import { getCourseSummaries } from "@/lib/courses";
 import type { CourseSummary } from "@/lib/types";
 
@@ -37,7 +38,7 @@ function CourseCard({ course }: { course: CourseSummary }) {
 function GettingStarted() {
   return (
     <div className="empty-state">
-      <div className="empty-state-icon">📚</div>
+      <div className="empty-state-icon"><BookOpen size={48} /></div>
       <h2 className="empty-state-title">No courses yet</h2>
       <p className="empty-state-sub">
         Add your first course in one of two ways:
@@ -91,7 +92,7 @@ export default function Home() {
               <CourseCard key={course.id} course={course} />
             ))}
             <div className="cat-card cat-empty">
-              <span className="empty-glyph">✦</span>
+              <span className="empty-glyph"><Sparkles size={26} /></span>
               <span className="empty-head">Create a course</span>
               <span className="empty-cli">
                 Run <code className="cli">/new-course</code> in Claude Code

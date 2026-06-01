@@ -1,6 +1,7 @@
 export const dynamic = process.env.NEXT_PUBLIC_DEMO === "true" ? "auto" : "force-dynamic";
 
 import Link from "next/link";
+import { FileText, Sparkles } from "lucide-react";
 import { getQuizSummaries } from "@/lib/quizzes";
 import type { QuizConfig } from "@/lib/types";
 
@@ -8,7 +9,7 @@ function QuizCard({ quiz }: { quiz: QuizConfig }) {
   return (
     <Link href={`/quizzes/${quiz.id}`} className="cat-card" dir={quiz.language === "fa" ? "rtl" : "ltr"}>
       <div className="cat-card-top">
-        <span className="cat-glyph">📝</span>
+        <span className="cat-glyph"><FileText size={46} /></span>
         <div className="cat-badges">
           {quiz.language === "fa" && <span className="lang-badge">فارسی</span>}
           <span className={`subject-badge subj-${quiz.subject}`}>
@@ -31,7 +32,7 @@ function QuizCard({ quiz }: { quiz: QuizConfig }) {
 function GettingStarted() {
   return (
     <div className="empty-state">
-      <div className="empty-state-icon">📝</div>
+      <div className="empty-state-icon"><FileText size={48} /></div>
       <h2 className="empty-state-title">No quizzes yet</h2>
       <p className="empty-state-sub">Add your first quiz in one of two ways:</p>
       <div className="empty-state-options">
@@ -81,7 +82,7 @@ export default function QuizzesPage() {
               <QuizCard key={quiz.id} quiz={quiz} />
             ))}
             <div className="cat-card cat-empty">
-              <span className="empty-glyph">✦</span>
+              <span className="empty-glyph"><Sparkles size={26} /></span>
               <span className="empty-head">Create a quiz</span>
               <span className="empty-cli">
                 Run <code className="cli">/new-quiz</code> in Claude Code

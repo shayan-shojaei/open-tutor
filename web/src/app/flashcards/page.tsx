@@ -1,6 +1,7 @@
 export const dynamic = process.env.NEXT_PUBLIC_DEMO === "true" ? "auto" : "force-dynamic";
 
 import Link from "next/link";
+import { Layers, Sparkles } from "lucide-react";
 import { getFlashCardDecks } from "@/lib/flashcards";
 import type { FlashCardDeck } from "@/lib/types";
 
@@ -8,7 +9,7 @@ function DeckCard({ deck }: { deck: FlashCardDeck }) {
   return (
     <Link href={`/flashcards/${deck.id}`} className="cat-card" dir={deck.language === "fa" ? "rtl" : "ltr"}>
       <div className="cat-card-top">
-        <span className="cat-glyph">🃏</span>
+        <span className="cat-glyph"><Layers size={46} /></span>
         <div className="cat-badges">
           {deck.language === "fa" && <span className="lang-badge">فارسی</span>}
           <span className={`subject-badge subj-${deck.subject}`}>
@@ -29,7 +30,7 @@ function DeckCard({ deck }: { deck: FlashCardDeck }) {
 function GettingStarted() {
   return (
     <div className="empty-state">
-      <div className="empty-state-icon">🃏</div>
+      <div className="empty-state-icon"><Layers size={48} /></div>
       <h2 className="empty-state-title">No flash card decks yet</h2>
       <p className="empty-state-sub">Add your first deck in one of two ways:</p>
       <div className="empty-state-options">
@@ -79,7 +80,7 @@ export default function FlashCardsPage() {
               <DeckCard key={deck.id} deck={deck} />
             ))}
             <div className="cat-card cat-empty">
-              <span className="empty-glyph">✦</span>
+              <span className="empty-glyph"><Sparkles size={26} /></span>
               <span className="empty-head">Create a deck</span>
               <span className="empty-cli">
                 Run <code className="cli">/new-flash-card</code> in Claude Code
