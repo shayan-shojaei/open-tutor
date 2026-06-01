@@ -6,7 +6,7 @@ import type { CourseConfig, SectionData } from "@/lib/types";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { LessonView } from "@/components/content/LessonView";
 import { QuizView } from "@/components/interactive/QuizView";
-import { ChevronRight, ArrowRight, ArrowLeft } from "lucide-react";
+import { ChevronRight, ArrowRight, ArrowLeft, Menu } from "lucide-react";
 import { apiUrl } from "@/lib/api-url";
 
 type Phase = "summary" | "quiz" | "done";
@@ -20,6 +20,7 @@ export default function RecapSectionPage() {
   const [sectionIds, setSectionIds] = useState<string[]>([]);
   const [phase, setPhase] = useState<Phase>("summary");
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -103,9 +104,15 @@ export default function RecapSectionPage() {
         hasRecap={true}
         isRecap={true}
         recapSectionIds={sectionIds}
+        isMobileOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       <main className="app-main">
+        <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+          <Menu size={16} />
+          {dir === "rtl" ? "فهرست" : "Menu"}
+        </button>
         <div className="section-page">
           <div className="breadcrumb">
             <span className="crumb-chapter">{dir === "rtl" ? "مرور" : "Recap"}</span>

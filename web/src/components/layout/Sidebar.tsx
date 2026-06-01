@@ -13,9 +13,11 @@ interface SidebarProps {
   hasRecap?: boolean;
   isRecap?: boolean;
   recapSectionIds?: string[];
+  isMobileOpen?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, recapSectionIds }: SidebarProps) {
+export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, recapSectionIds, isMobileOpen, onClose }: SidebarProps) {
   const currentChapterId = course.chapters.find((c) =>
     c.sections.some((s) => s.id === currentSectionId)
   )?.id;
@@ -53,7 +55,11 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
   const BackArrow = dir === "rtl" ? ArrowRight : ArrowLeft;
 
   return (
-    <aside className="sidebar" dir={dir}>
+    <>
+      {isMobileOpen && (
+        <div className="sidebar-backdrop" onClick={onClose} aria-hidden="true" />
+      )}
+      <aside className={`sidebar${isMobileOpen ? " is-mobile-open" : ""}`} dir={dir}>
       <Link href="/" className="sidebar-back">
         <BackArrow size={16} />
         <span>{dir === "rtl" ? "همه دوره‌ها" : "All Courses"}</span>
@@ -158,5 +164,6 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
         </div>
       )}
     </aside>
+    </>
   );
 }

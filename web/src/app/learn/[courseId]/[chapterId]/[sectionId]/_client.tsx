@@ -8,7 +8,7 @@ import { LessonView } from "@/components/content/LessonView";
 import { ProblemView } from "@/components/interactive/ProblemView";
 import { QuizView } from "@/components/interactive/QuizView";
 import { setPhase, markSectionComplete } from "@/lib/progress";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Menu } from "lucide-react";
 import { apiUrl } from "@/lib/api-url";
 
 type Phase = "lesson" | "practice" | "quiz" | "complete";
@@ -33,6 +33,7 @@ export default function SectionPage() {
   const [phase, setPhaseState] = useState<Phase>("lesson");
   const [loading, setLoading] = useState(true);
   const [courseHasRecap, setCourseHasRecap] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -132,9 +133,20 @@ export default function SectionPage() {
 
   return (
     <div className="app-shell has-sidebar" dir={dir}>
-      <Sidebar course={courseConfig} currentSectionId={sectionId} dir={dir} hasRecap={courseHasRecap} />
+      <Sidebar
+        course={courseConfig}
+        currentSectionId={sectionId}
+        dir={dir}
+        hasRecap={courseHasRecap}
+        isMobileOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       <main className="app-main">
+        <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+          <Menu size={16} />
+          {dir === "rtl" ? "فهرست" : "Menu"}
+        </button>
         <div className="section-page">
           <div className="breadcrumb">
             <span className="crumb-chapter">{currentChapter?.title}</span>

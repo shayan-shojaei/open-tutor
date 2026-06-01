@@ -100,13 +100,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .brand-mark { font-size: 22px; line-height: 1; filter: saturate(.9); }
 .brand-name {
   font-family: var(--serif); font-weight: 600; font-size: 21px;
-  letter-spacing: -.01em; color: var(--ink);
+  letter-spacing: -.01em; color: var(--ink); white-space: nowrap;
 }
 .nav-pills { display: flex; gap: 6px; }
 .nav-pill {
   font-size: 14.5px; font-weight: 600; color: var(--ink-2);
   padding: 8px 17px; border-radius: var(--r-pill);
   transition: background .18s, color .18s; letter-spacing: .005em;
+  white-space: nowrap;
 }
 .nav-pill:hover { color: var(--ink); background: var(--surface-sunk); }
 .nav-pill.is-active { background: var(--ink); color: var(--paper); }
@@ -671,11 +672,111 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ===================== MOBILE MENU BUTTON ===================== */
+/* Shown only on mobile (≤880px) via media query below */
+.mobile-menu-btn {
+  display: none;
+  align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: var(--r-sm);
+  background: var(--surface-sunk); border: 1px solid var(--line);
+  font-size: 14px; font-weight: 600; color: var(--ink-2);
+  margin-bottom: 18px; transition: background .15s, color .15s;
+  cursor: pointer;
+}
+.mobile-menu-btn:hover { background: var(--line); color: var(--ink); }
+
+/* ===================== SIDEBAR BACKDROP ===================== */
+.sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 49;
+  background: rgba(0, 0, 0, .35);
+  animation: fade-backdrop .22s;
+}
+@keyframes fade-backdrop { from { opacity: 0; } to { opacity: 1; } }
+
 /* ===================== RESPONSIVE ===================== */
+html, body { overflow-x: hidden; }
+
 @media (max-width: 880px) {
-  .sidebar { display: none; }
-  .app-main { padding: 40px 24px 100px; }
-  .navbar-inner { padding: 14px 22px; }
+  /* Sidebar becomes a fixed off-canvas drawer */
+  .sidebar {
+    position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 50;
+    width: 300px; height: 100%;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform .3s cubic-bezier(.2, .7, .3, 1);
+    box-shadow: var(--shadow-lg);
+  }
+  [dir="rtl"] .sidebar {
+    inset-inline-start: auto; inset-inline-end: 0;
+    transform: translateX(100%);
+  }
+  .sidebar.is-mobile-open { transform: translateX(0); }
+  [dir="rtl"] .sidebar.is-mobile-open { transform: translateX(0); }
+
+  .sidebar-backdrop { display: block; }
+  .mobile-menu-btn { display: inline-flex; }
+
+  .app-main { padding: 20px 22px 80px; }
+  .app-shell.has-sidebar .app-main { padding-top: 16px; }
+  .navbar-inner { padding: 12px 20px; gap: 16px; }
+  .cat-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+}
+
+@media (max-width: 640px) {
+  .app-main { padding: 16px 16px 80px; }
+  .app-shell.has-sidebar .app-main { padding-top: 12px; }
+  .navbar-inner { padding: 10px 14px; gap: 10px; }
+  .brand-name { font-size: 17px; }
+  .brand-mark { font-size: 18px; }
+  .brand { gap: 7px; }
+  .nav-pills { gap: 2px; margin-inline-start: auto; }
+  .nav-pill { padding: 6px 10px; font-size: 13px; }
+
+  /* Catalog */
+  .cat-grid { grid-template-columns: 1fr; gap: 12px; }
+  .page-head { margin-bottom: 28px; }
+  .page-sub { font-size: 16px; }
+
+  /* Section content */
+  .section-page { max-width: 100%; }
+  .breadcrumb { font-size: 13px; gap: 6px; margin-bottom: 16px; }
+  .section-title { margin-bottom: 24px; }
+
+  /* Lesson */
+  .lesson-body { font-size: 17px; line-height: 1.7; }
+
+  /* Problem cards */
+  .problem { padding: 16px 16px; }
+  .problem-prompt { font-size: 16px; }
+
+  /* Quiz */
+  .quiz-q { font-size: 20px; }
+  .quiz-opt { padding: 12px 14px; font-size: 15.5px; gap: 11px; }
+  .qz-question-wrap { padding: 22px 18px; }
+
+  /* Flashcards */
+  .fc-card { min-height: 240px; }
+  .fc-face { padding: 28px 20px; }
+  .fc-content { font-size: 20px; }
+  .fc-ratings { gap: 8px; }
+  .rate-btn { padding: 13px 6px; font-size: 14px; gap: 5px; }
+
+  /* Buttons */
+  .continue-btn { padding: 12px 20px; font-size: 14.5px; }
+  .btn-ghost { padding: 11px 18px; font-size: 14px; }
+  .phase-actions { margin-top: 28px; }
+
+  /* Quiz nav */
+  .qz-nav-row { margin-top: 16px; }
+
+  /* Results */
+  .complete-state { padding: 48px 0; }
+  .empty-state { padding: 48px 16px; }
+
+  /* fc stats row */
+  .fc-stats { gap: 8px; }
+  .fc-stat { min-width: 0; padding: 14px 10px; }
 }
 
 @layer utilities {
