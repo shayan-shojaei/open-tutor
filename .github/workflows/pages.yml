@@ -32,6 +32,13 @@ jobs:
         run: npm ci
         working-directory: web
 
+      - name: Remove routes that require a server or have no demo data
+        run: |
+          rm -rf web/src/app/api
+          rm -rf "web/src/app/learn/[courseId]/recap"
+          rm -rf "web/src/app/flashcards/[deckId]"
+          rm -rf "web/src/app/quizzes/[quizId]"
+
       - name: Build demo
         run: npm run build:demo
         working-directory: web

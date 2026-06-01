@@ -1,3 +1,6 @@
+export const dynamic = process.env.NEXT_PUBLIC_DEMO === "true" ? "force-static" : "auto";
+export function generateStaticParams() { return []; }
+
 import { NextResponse } from "next/server";
 import { getQuizConfig, getQuizQuestions } from "@/lib/quizzes";
 
