@@ -23,4 +23,5 @@ func init() {
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(moduleCmd)
 	rootCmd.AddCommand(repoCmd)
+	rootCmd.AddCommand(skillsCmd)
 }

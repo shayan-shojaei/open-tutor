@@ -1,6 +1,7 @@
 ## CLI build artifacts
 cli/tutor
 cli/tutor.exe
+cli/cmd/skills/
 
 ## Next.js
 web/.next/

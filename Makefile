@@ -8,6 +8,9 @@ PORT      ?= 3000
 
 LDFLAGS   := -ldflags "-s -w -X github.com/shayan-shojaei/open-tutor/internal/config.Version=$(VERSION)"
 
+SKILLS_SRC := .claude/skills
+SKILLS_DST := cli/cmd/skills
+
 # ─── Colours ──────────────────────────────────────────────────────────────────
 BOLD  := \033[1m
 CYAN  := \033[36m
@@ -16,7 +19,7 @@ RESET := \033[0m
 
 .DEFAULT_GOAL := help
 
-.PHONY: help build build-cli build-web web-deps test \
+.PHONY: help build build-cli build-web web-deps test sync-skills \
         dev package deploy-web init local-deploy start start-fg stop install clean
 
 help: ## Show available targets
@@ -33,7 +36,13 @@ help: ## Show available targets
 
 build: build-cli build-web ## Build CLI binary and Next.js standalone output
 
-build-cli: ## Compile → cli/tutor
+sync-skills: ## Sync .claude/skills/ → cli/cmd/skills/ (embedded in binary)
+	@echo "$(BOLD)Syncing skills...$(RESET)"
+	@rm -rf $(SKILLS_DST)
+	@cp -r $(SKILLS_SRC) $(SKILLS_DST)
+	@echo "$(GREEN)✓ skills synced$(RESET)"
+
+build-cli: sync-skills ## Compile → cli/tutor
 	@echo "$(BOLD)Building CLI $(VERSION)...$(RESET)"
 	cd $(CLI_DIR) && go build $(LDFLAGS) -o tutor .
 	@echo "$(GREEN)✓ cli/tutor$(RESET)"
