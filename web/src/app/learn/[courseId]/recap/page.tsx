@@ -1,32 +1,13 @@
-"use client";
+import { getCourseSummaries, hasRecap } from "@/lib/courses";
+import RecapIndexPage from "./_client";
 
-import { useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+export function generateStaticParams() {
+  if (process.env.NEXT_PUBLIC_DEMO !== "true") return [];
+  return getCourseSummaries()
+    .filter((c) => hasRecap(c.id))
+    .map((c) => ({ courseId: c.id }));
+}
 
-export default function RecapIndexPage() {
-  const { courseId } = useParams<{ courseId: string }>();
-  const router = useRouter();
-
-  useEffect(() => {
-    async function redirect() {
-      const res = await fetch(`/api/recap/${courseId}`);
-      if (!res.ok) {
-        router.replace(`/learn/${courseId}`);
-        return;
-      }
-      const { hasRecap, sectionIds } = await res.json();
-      if (!hasRecap || !sectionIds?.length) {
-        router.replace(`/learn/${courseId}`);
-      } else {
-        router.replace(`/learn/${courseId}/recap/${sectionIds[0]}`);
-      }
-    }
-    redirect();
-  }, [courseId, router]);
-
-  return (
-    <div className="spinner-page">
-      <div className="spinner" />
-    </div>
-  );
+export default function Page({ params }: { params: { courseId: string } }) {
+  return <RecapIndexPage />;
 }

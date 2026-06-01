@@ -4,8 +4,13 @@ cli/tutor.exe
 
 ## Next.js
 web/.next/
+web/out/
 web/node_modules/
 web/.env*.local
+
+## Demo build artifacts (generated at build time)
+web/public/_data/
+web/public/_demo-assets/
 
 ## macOS
 .DS_Store

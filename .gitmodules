@@ -1,0 +1,3 @@
+[submodule "demo-modules"]
+	path = demo-modules
+	url = https://github.com/shayan-shojaei/open-tutor-sample-modules

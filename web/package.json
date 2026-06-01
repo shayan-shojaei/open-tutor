@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:demo": "TUTOR_MODULES_DIR=../demo-modules NEXT_PUBLIC_DEMO=true NEXT_PUBLIC_BASE_PATH=/open-tutor tsx scripts/generate-demo-data.ts && TUTOR_MODULES_DIR=../demo-modules NEXT_PUBLIC_DEMO=true NEXT_PUBLIC_BASE_PATH=/open-tutor next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -33,6 +34,7 @@
     "@types/react-dom": "^18",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }

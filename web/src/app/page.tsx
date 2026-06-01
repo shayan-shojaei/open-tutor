@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const dynamic = process.env.NEXT_PUBLIC_DEMO === "true" ? "auto" : "force-dynamic";
 
 import Link from "next/link";
 import { getCourseSummaries } from "@/lib/courses";
