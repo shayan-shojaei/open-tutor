@@ -15,6 +15,24 @@ need() {
   command -v "$1" >/dev/null 2>&1 || die "'$1' is required but not installed."
 }
 
+check_node() {
+  if command -v node >/dev/null 2>&1; then
+    ok "Node.js found: $(node --version)"
+    return
+  fi
+  printf '\n  \033[1;31merror:\033[0m Node.js is required but was not found.\n'
+  case "$(uname -s)" in
+    Darwin)
+      printf '  Install it with Homebrew: \033[1mbrew install node\033[0m\n'
+      printf '  Or via nvm:               \033[1mnvm install --lts\033[0m\n' ;;
+    Linux)
+      printf '  Install it via nvm:       \033[1mnvm install --lts\033[0m\n'
+      printf '  Or via your package manager (apt/dnf/pacman).\n' ;;
+  esac
+  printf '  See https://nodejs.org for all options.\n\n'
+  exit 1
+}
+
 # ── detect platform ────────────────────────────────────────────────────────────
 
 detect_platform() {
@@ -52,6 +70,7 @@ latest_version() {
 
 main() {
   need curl
+  check_node
 
   local version="${TUTOR_VERSION:-}"
   if [[ -z "$version" ]]; then

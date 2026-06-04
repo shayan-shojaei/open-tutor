@@ -42,7 +42,7 @@ Sample modules: **[open-tutor-sample-modules](https://github.com/shayan-shojaei/
 
 ## Quick Start
 
-### Recommended — one-liner install
+### macOS / Linux — one-liner install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/shayan-shojaei/open-tutor/main/install.sh | bash
@@ -50,9 +50,10 @@ curl -fsSL https://raw.githubusercontent.com/shayan-shojaei/open-tutor/main/inst
 
 This script will:
 1. Detect your OS and architecture
-2. Download the latest `tutor` CLI binary to `~/.local/bin` (no `sudo` required)
-3. Run `tutor init` to create `~/.tutor/`
-4. Run `tutor install` to download the latest web app
+2. Check that Node.js is installed (required at runtime)
+3. Download the latest `tutor` CLI binary to `~/.local/bin` (no `sudo` required)
+4. Run `tutor init` to create `~/.tutor/`
+5. Run `tutor install` to download the latest web app
 
 > **Custom install dir** — set `TUTOR_INSTALL_DIR=/usr/local/bin` before piping to bash
 > if you'd rather install system-wide (requires `sudo` access to that directory).
@@ -66,6 +67,25 @@ tutor start --port 8080
 
 > **Pin a version** — set `TUTOR_VERSION=v1.2.3` before piping to bash if you need a
 > specific release.
+
+---
+
+### Windows — one-liner install (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/shayan-shojaei/open-tutor/main/install.ps1 | iex
+```
+
+This script will:
+1. Check that Node.js is installed — and attempt to install it via `winget` if not
+2. Download the latest `tutor-windows-amd64.exe` to `%USERPROFILE%\.local\bin\tutor.exe`
+3. Add the install directory to your user `PATH`
+4. Run `tutor init` and `tutor install`
+
+Open a new terminal after installation, then run `tutor start`.
+
+> **Pin a version** — set `$env:TUTOR_VERSION = "v1.2.3"` before running the script.
+> **Custom install dir** — set `$env:TUTOR_INSTALL_DIR = "C:\your\path"` before running.
 
 ---
 
