@@ -12,7 +12,7 @@ $BINARY_NAME = 'tutor.exe'
 
 function Write-Info  { param($msg) Write-Host "==> $msg" -ForegroundColor Blue }
 function Write-Ok    { param($msg) Write-Host "  OK $msg" -ForegroundColor Green }
-function Write-Fail  { param($msg) Write-Error "error: $msg" }
+function Write-Fail  { param($msg) Write-Host "error: $msg" -ForegroundColor Red }
 
 # ── check Node.js ──────────────────────────────────────────────────────────────
 
@@ -108,4 +108,13 @@ function Main {
     Write-Host ""
 }
 
-Main
+try {
+    Main
+} catch {
+    Write-Host ""
+    Write-Host "error: $_" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Press any key to close..." -ForegroundColor Yellow
+    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+    exit 1
+}
