@@ -42,6 +42,8 @@ Sample modules: **[open-tutor-sample-modules](https://github.com/shayan-shojaei/
 
 ## Quick Start
 
+> **New to terminals?** See the [step-by-step installation guide](INSTALL.md) for detailed instructions with no assumed experience.
+
 ### macOS / Linux — one-liner install
 
 ```bash
@@ -237,6 +239,7 @@ tutor init                               Create ~/.tutor/ structure
 tutor install [--version v1.2.3]         Download the web app
 tutor upgrade                            Upgrade to the latest release
 tutor start [--port N]                   Serve the web app
+tutor uninstall                          Remove Open Tutor (prompts to keep/delete modules)
 
 tutor module list                        List installed modules
 tutor module install <repo> <id>         Install a module
