@@ -24,4 +24,5 @@ func init() {
 	rootCmd.AddCommand(moduleCmd)
 	rootCmd.AddCommand(repoCmd)
 	rootCmd.AddCommand(skillsCmd)
+	rootCmd.AddCommand(uninstallCmd)
 }
