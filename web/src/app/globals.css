@@ -474,7 +474,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---- Complete state ---- */
 .complete-state { text-align: center; padding: 80px 0; animation: fade-up .4s; }
-.complete-emoji { font-size: 64px; margin-bottom: 20px; animation: pop-in .6s cubic-bezier(.2,.8,.25,1.4); }
+.complete-emoji { font-size: 64px; margin-bottom: 20px; animation: pop-in .6s cubic-bezier(.2,.8,.25,1.4); display: flex; justify-content: center; }
 .complete-head { font-family: var(--serif); font-size: 32px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
 [dir="rtl"] .complete-head { font-family: var(--fa); }
 .complete-sub { font-size: 16.5px; color: var(--ink-3); }
