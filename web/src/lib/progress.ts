@@ -53,6 +53,12 @@ export function setPhase(
   setProgress(p);
 }
 
+export function resetCourseProgress(courseId: string) {
+  const p = getProgress();
+  delete p[courseId];
+  setProgress(p);
+}
+
 export function isSectionComplete(courseId: string, sectionId: string): boolean {
   const p = getProgress();
   return courseProgress(p, courseId)?.completedSections?.includes(sectionId) ?? false;

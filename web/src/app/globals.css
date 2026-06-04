@@ -265,6 +265,47 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .recap-icon { font-size: 16px; line-height: 1; }
 
+/* ===================== RESET PROGRESS ===================== */
+.sidebar-reset {
+  margin-top: 18px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+.sidebar-reset-btn:hover { opacity: 1; }
+.sidebar-reset-confirm {
+  font-size: 0.75rem;
+  color: #dc2626;
+  background: none;
+  border: 1px solid #dc2626;
+  border-radius: var(--r-sm);
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.sidebar-reset-cancel {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 /* ===================== SECTION PAGE ===================== */
 .section-page { max-width: 760px; margin: 0 auto; }
 .breadcrumb {

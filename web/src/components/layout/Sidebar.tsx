@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { CourseConfig } from "@/lib/types";
-import { isSectionComplete } from "@/lib/progress";
-import { CheckCircle2, Lock, ChevronDown, ArrowLeft, ArrowRight } from "lucide-react";
+import { isSectionComplete, resetCourseProgress } from "@/lib/progress";
+import { CheckCircle2, Lock, ChevronDown, ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 
 interface SidebarProps {
   course: CourseConfig;
@@ -25,6 +26,8 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
     new Set(currentChapterId ? [currentChapterId] : [])
   );
   const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [confirmReset, setConfirmReset] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const s = new Set(
@@ -50,6 +53,18 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
     const idx = allSectionIds.indexOf(sectionId);
     if (idx === 0) return false;
     return !completed.has(allSectionIds[idx - 1]);
+  }
+
+  function handleReset() {
+    if (!confirmReset) { setConfirmReset(true); return; }
+    resetCourseProgress(course.id);
+    setCompleted(new Set());
+    setConfirmReset(false);
+    const firstChapter = course.chapters[0];
+    const firstSection = firstChapter?.sections[0];
+    if (firstChapter && firstSection) {
+      router.push(`/learn/${course.id}/${firstChapter.id}/${firstSection.id}`);
+    }
   }
 
   const BackArrow = dir === "rtl" ? ArrowRight : ArrowLeft;
@@ -163,6 +178,23 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
           )}
         </div>
       )}
+      {completed.size > 0 && <div className="sidebar-reset">
+        {confirmReset ? (
+          <>
+            <button className="sidebar-reset-confirm" onClick={handleReset}>
+              {dir === "rtl" ? "مطمئنی؟ تأیید کن" : "Sure? Confirm reset"}
+            </button>
+            <button className="sidebar-reset-cancel" onClick={() => setConfirmReset(false)}>
+              {dir === "rtl" ? "لغو" : "Cancel"}
+            </button>
+          </>
+        ) : (
+          <button className="sidebar-reset-btn" onClick={handleReset}>
+            <RotateCcw size={14} />
+            <span>{dir === "rtl" ? "بازنشانی پیشرفت" : "Reset progress"}</span>
+          </button>
+        )}
+      </div>}
     </aside>
     </>
   );
