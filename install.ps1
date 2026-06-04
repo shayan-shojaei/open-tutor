@@ -44,7 +44,7 @@ function Assert-Node {
     Write-Host "  Please install Node.js from https://nodejs.org (LTS recommended)" -ForegroundColor Yellow
     Write-Host "  Then re-run this script." -ForegroundColor Yellow
     Write-Host ""
-    exit 1
+    throw "Node.js not found. Please install it and re-run."
 }
 
 # ── resolve latest version ─────────────────────────────────────────────────────
@@ -73,8 +73,7 @@ function Add-ToUserPath {
 function Main {
     # Check architecture — only AMD64 is shipped
     if ($env:PROCESSOR_ARCHITECTURE -ne 'AMD64') {
-        Write-Fail "Only AMD64 (x86-64) Windows is supported. Got: $env:PROCESSOR_ARCHITECTURE"
-        exit 1
+        throw "Only AMD64 (x86-64) Windows is supported. Got: $env:PROCESSOR_ARCHITECTURE"
     }
 
     Assert-Node
@@ -114,7 +113,9 @@ try {
     Write-Host ""
     Write-Host "error: $_" -ForegroundColor Red
     Write-Host ""
-    Write-Host "Press any key to close..." -ForegroundColor Yellow
-    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+    try {
+        Write-Host "Press any key to close..." -ForegroundColor Yellow
+        $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+    } catch {}
     exit 1
 }
