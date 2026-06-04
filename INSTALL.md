@@ -214,10 +214,16 @@ Then try the install command again.
 
 ### The browser shows nothing after `tutor start`
 
-Wait a few seconds and refresh — the server may still be starting up. If it still doesn't load, check the log:
+Wait a few seconds and refresh — the server may still be starting up. If it still doesn't load, check the log.
 
-```
+**macOS / Linux:**
+```bash
 cat ~/.tutor/tutor.log
+```
+
+**Windows (PowerShell):**
+```powershell
+Get-Content "$env:USERPROFILE\.tutor\tutor.log"
 ```
 
 If you see a Node.js error, make sure Node.js 18 or newer is installed (`node --version`).
