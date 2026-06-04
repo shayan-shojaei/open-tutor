@@ -112,6 +112,22 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .nav-pill:hover { color: var(--ink); background: var(--surface-sunk); }
 .nav-pill.is-active { background: var(--ink); color: var(--paper); }
 
+.font-size-controls { display: flex; gap: 4px; margin-inline-start: auto; }
+.font-size-controls button {
+  font-size: 13px; font-weight: 700; font-family: var(--sans);
+  color: var(--ink-2); background: none; border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: 5px 10px; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.font-size-controls button:hover:not(:disabled) { background: var(--surface-sunk); color: var(--ink); }
+.font-size-controls button:disabled { opacity: 0.35; cursor: default; }
+.font-size-label {
+  font-size: 12px; font-weight: 600; font-family: var(--mono);
+  color: var(--ink-3); min-width: 32px; text-align: center;
+  align-self: center;
+}
+@media (max-width: 880px) { .font-size-controls { display: none; } }
+
 /* ===================== CATALOG PAGES ===================== */
 .page { max-width: 1060px; margin: 0 auto; }
 .page-head { margin-bottom: 48px; }
@@ -325,9 +341,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .section-title {
   font-family: var(--serif); font-weight: 700;
   font-size: clamp(34px, 4.4vw, 50px); line-height: 1.04;
-  letter-spacing: -.025em; margin: 0 0 38px; color: var(--ink);
+  letter-spacing: -.025em; margin: 0 0 20px; color: var(--ink);
 }
 [dir="rtl"] .section-title { font-family: var(--fa); letter-spacing: 0; line-height: 1.25; }
+
+.course-progress {
+  height: 4px; background: var(--line);
+  border-radius: 99px; margin: 0 0 32px; overflow: hidden;
+}
+.course-progress-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 99px; transition: width .4s ease;
+}
 
 .phase-body { animation: fade-up .4s cubic-bezier(.2,.7,.3,1) both; }
 @keyframes fade-up {
@@ -368,8 +393,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---- Markdown / lesson body ---- */
 .md { color: var(--ink); }
-.lesson-body { font-family: var(--serif); font-size: 20px; line-height: 1.66; color: var(--ink); }
-[dir="rtl"] .lesson-body { font-family: var(--fa); font-size: 18.5px; line-height: 1.95; }
+.lesson-body { font-family: var(--serif); font-size: var(--lesson-font-size, 20px); line-height: 1.66; color: var(--ink); }
+[dir="rtl"] .lesson-body { font-family: var(--fa); font-size: calc(var(--lesson-font-size, 20px) - 1.5px); line-height: 1.95; }
 .md-h2 {
   font-family: var(--serif); font-weight: 600; font-size: 28px;
   line-height: 1.15; letter-spacing: -.018em; margin: 42px 0 16px; color: var(--ink);

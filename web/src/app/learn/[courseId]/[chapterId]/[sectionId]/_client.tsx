@@ -7,7 +7,8 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { LessonView } from "@/components/content/LessonView";
 import { ProblemView } from "@/components/interactive/ProblemView";
 import { QuizView } from "@/components/interactive/QuizView";
-import { setPhase, markSectionComplete } from "@/lib/progress";
+import { setPhase, markSectionComplete, getProgress } from "@/lib/progress";
+import type { CourseProgress } from "@/lib/types";
 import { ChevronRight, Menu, PartyPopper } from "lucide-react";
 import { apiUrl } from "@/lib/api-url";
 
@@ -158,6 +159,17 @@ export default function SectionPage() {
           </div>
 
           <h1 className="section-title">{currentSection?.title}</h1>
+
+          {(() => {
+            const allSections = courseConfig.chapters.flatMap((c) => c.sections);
+            const completedCount = (getProgress()[courseId] as CourseProgress)?.completedSections?.length ?? 0;
+            const pct = Math.min(100, Math.round((completedCount / allSections.length) * 100));
+            return (
+              <div className="course-progress" title={`${pct}% complete`}>
+                <div className="course-progress-fill" style={{ width: `${pct}%` }} />
+              </div>
+            );
+          })()}
 
           {phase === "lesson" && (
             <LessonView

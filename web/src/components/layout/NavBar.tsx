@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen } from "lucide-react";
+import { useFontSize } from "@/lib/useFontSize";
 
 export default function NavBar() {
   const pathname = usePathname();
+  const { currentSize, canDecrease, canIncrease, decrease, increase } = useFontSize();
 
   const isCourses = pathname === "/" || pathname.startsWith("/learn");
   const isFlashCards = pathname.startsWith("/flashcards");
   const isQuizzes = pathname.startsWith("/quizzes");
+  const isLearnPage = pathname.startsWith("/learn/") && pathname.split("/").length > 3;
 
   return (
     <header className="navbar">
@@ -29,6 +32,13 @@ export default function NavBar() {
             Quizzes
           </Link>
         </nav>
+        {isLearnPage && (
+          <div className="font-size-controls">
+            <button onClick={decrease} disabled={!canDecrease} aria-label="Decrease font size">A−</button>
+            <span className="font-size-label">{currentSize}px</span>
+            <button onClick={increase} disabled={!canIncrease} aria-label="Increase font size">A+</button>
+          </div>
+        )}
       </div>
     </header>
   );
