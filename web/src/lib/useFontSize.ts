@@ -7,27 +7,31 @@ const DEFAULT_IDX = 3; // 19px
 const LS_KEY = "tutor-lesson-font-size";
 
 export function useFontSize() {
-  const [idx, setIdx] = useState<number>(() => {
-    if (typeof window === "undefined") return DEFAULT_IDX;
+  const [idx, setIdx] = useState<number>(DEFAULT_IDX);
+
+  useEffect(() => {
     const stored = localStorage.getItem(LS_KEY);
     if (stored !== null) {
       const px = parseInt(stored, 10);
       const i = SIZES.indexOf(px);
-      if (i >= 0) return i;
+      if (i >= 0) setIdx(i);
     }
-    return DEFAULT_IDX;
-  });
+  }, []);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--lesson-font-size", SIZES[idx] + "px");
-    localStorage.setItem(LS_KEY, String(SIZES[idx]));
   }, [idx]);
+
+  const changeSize = (next: number) => {
+    setIdx(next);
+    localStorage.setItem(LS_KEY, String(SIZES[next]));
+  };
 
   return {
     currentSize: SIZES[idx],
     canDecrease: idx > 0,
     canIncrease: idx < SIZES.length - 1,
-    decrease: () => setIdx((i) => Math.max(0, i - 1)),
-    increase: () => setIdx((i) => Math.min(SIZES.length - 1, i + 1)),
+    decrease: () => changeSize(Math.max(0, idx - 1)),
+    increase: () => changeSize(Math.min(SIZES.length - 1, idx + 1)),
   };
 }

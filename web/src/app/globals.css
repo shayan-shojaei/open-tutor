@@ -761,7 +761,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 @keyframes fade-backdrop { from { opacity: 0; } to { opacity: 1; } }
 
 /* ===================== RESPONSIVE ===================== */
-html, body { overflow-x: hidden; }
+html, body { overflow-x: clip; }
 
 @media (max-width: 880px) {
   /* Sidebar becomes a fixed off-canvas drawer */
