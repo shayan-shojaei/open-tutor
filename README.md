@@ -14,6 +14,7 @@ Sample modules: **[open-tutor-sample-modules](https://github.com/shayan-shojaei/
 🧠 **Per-section quizzes** that unlock the next section on a passing score  
 🔁 **Recaps** — condensed summaries and fresh quizzes for any course you've finished  
 🃏 **Flashcard decks** for active recall  
+🖊️ **Text annotations** — highlight and annotate any passage in lessons or problems  
 🧩 **Fully modular** — every course, deck, and quiz is a folder you can add, remove, or share
 
 ---
