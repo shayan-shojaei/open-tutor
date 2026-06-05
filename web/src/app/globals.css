@@ -877,3 +877,128 @@ html, body { overflow-x: hidden; }
   padding: 12px 14px; font-size: 0.8rem; font-family: var(--font-mono);
   color: var(--text); overflow-x: auto; white-space: pre; line-height: 1.7;
 }
+
+/* ===================== ANNOTATIONS ===================== */
+.annotation-mark {
+  cursor: pointer; border-radius: 2px;
+  transition: filter .12s;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.annotation-mark.is-hovered { filter: brightness(0.88) saturate(1.1); }
+.annotation-yellow { background: oklch(0.94 0.15 85 / 0.50); }
+.annotation-green  { background: oklch(0.91 0.13 145 / 0.48); }
+.annotation-blue   { background: oklch(0.89 0.11 230 / 0.46); }
+.annotation-mark[data-has-note]::after {
+  content: "✦"; font-size: 0.52em; vertical-align: super; margin-left: 2px; opacity: .5;
+}
+
+/* ── Selection toolbar ────────────────────────────── */
+.annotation-toolbar {
+  position: fixed; z-index: 200;
+  background: color-mix(in oklch, var(--paper) 97%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow), 0 0 0 1px var(--line);
+  padding: 7px 10px;
+  backdrop-filter: blur(12px) saturate(1.2);
+  pointer-events: auto; white-space: nowrap;
+}
+.annotation-toolbar-row,
+.annotation-toolbar-note { display: flex; align-items: center; gap: 7px; }
+.annotation-toolbar-divider { width: 1px; height: 18px; background: var(--line); flex-shrink: 0; }
+.annotation-toolbar-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--r-sm);
+  color: var(--ink-2); transition: background .14s, color .14s;
+}
+.annotation-toolbar-icon:hover { background: var(--surface-sunk); color: var(--ink); }
+.annotation-toolbar-btn {
+  font-size: 12px; font-weight: 600; font-family: var(--sans);
+  color: var(--on-accent); background: var(--accent);
+  padding: 4px 12px; border-radius: var(--r-sm);
+  transition: background .14s; letter-spacing: .01em;
+}
+.annotation-toolbar-btn:hover { background: var(--accent-press); }
+
+/* ── Color swatches ───────────────────────────────── */
+.annotation-toolbar-swatches,
+.annotation-popover-swatches { display: flex; gap: 6px; align-items: center; }
+.annotation-swatch {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: 0 1px 3px rgba(64,46,28,.14);
+  transition: transform .15s cubic-bezier(.2,.8,.3,1), box-shadow .15s, border-color .15s;
+  flex-shrink: 0; outline: none;
+}
+.annotation-swatch:hover { transform: scale(1.2); box-shadow: 0 2px 7px rgba(64,46,28,.22); }
+.annotation-swatch.is-active {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ink) 14%, transparent);
+}
+.annotation-swatch-yellow { background: oklch(0.86 0.21 85); }
+.annotation-swatch-green  { background: oklch(0.73 0.19 145); }
+.annotation-swatch-blue   { background: oklch(0.66 0.17 230); }
+
+/* ── Note input (inside toolbar) ─────────────────── */
+.annotation-note-input {
+  font-size: 13px; font-family: var(--sans);
+  background: var(--surface-sunk); color: var(--ink);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 5px 10px; outline: none; width: 190px;
+  transition: border-color .15s;
+}
+.annotation-note-input::placeholder { color: var(--ink-3); }
+.annotation-note-input:focus { border-color: var(--accent); }
+
+/* ── Annotation popover ───────────────────────────── */
+.annotation-popover {
+  position: fixed; z-index: 200;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg);
+  width: 296px;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.annotation-popover-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 12px 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+.annotation-popover .annotation-toolbar-icon { color: var(--ink-3); width: 26px; height: 26px; }
+.annotation-popover .annotation-toolbar-icon:hover { color: var(--ink-2); background: var(--surface-sunk); }
+.annotation-popover-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.annotation-popover-quote {
+  font-size: 12.5px; color: var(--ink-2); font-style: italic; font-family: var(--serif);
+  border-inline-start: 2.5px solid var(--accent-line);
+  padding: 5px 10px; margin: 0;
+  background: var(--accent-tint); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  line-height: 1.55;
+}
+.annotation-note-textarea {
+  font-size: 13px; font-family: var(--sans);
+  background: var(--surface-sunk); color: var(--ink);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 8px 10px; resize: vertical; outline: none; line-height: 1.5;
+  transition: border-color .15s;
+}
+.annotation-note-textarea:focus { border-color: var(--accent); }
+.annotation-popover-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+.annotation-delete-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12.5px; color: var(--ink-3); transition: color .15s;
+}
+.annotation-delete-btn:hover { color: var(--bad); }
+.annotation-save-btn {
+  font-size: 13px; font-weight: 600;
+  background: var(--accent); color: var(--on-accent);
+  padding: 5px 16px; border-radius: var(--r-sm);
+  transition: background .15s; letter-spacing: .01em;
+}
+.annotation-save-btn:hover { background: var(--accent-press); }

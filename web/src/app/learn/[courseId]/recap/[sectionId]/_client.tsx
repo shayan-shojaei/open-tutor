@@ -129,6 +129,8 @@ export default function RecapSectionPage() {
               dir={dir}
               continueLabel={summaryLabel}
               onContinue={() => hasQuiz ? setPhase("quiz") : navigateNext()}
+              courseId={courseId}
+              sectionId={`recap-${sectionId}`}
             />
           )}
 

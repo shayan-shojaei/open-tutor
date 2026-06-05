@@ -1,6 +1,6 @@
 "use client";
 
-import { MarkdownRenderer } from "./MarkdownRenderer";
+import { AnnotatableContent } from "@/components/annotations/AnnotatableContent";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 
 interface LessonViewProps {
@@ -8,14 +8,30 @@ interface LessonViewProps {
   dir: "ltr" | "rtl";
   continueLabel: string;
   onContinue: () => void;
+  courseId: string;
+  sectionId: string;
 }
 
-export function LessonView({ markdown, dir, continueLabel, onContinue }: LessonViewProps) {
+export function LessonView({
+  markdown,
+  dir,
+  continueLabel,
+  onContinue,
+  courseId,
+  sectionId,
+}: LessonViewProps) {
   const FwdIcon = dir === "rtl" ? ArrowLeft : ArrowRight;
 
   return (
     <div className="phase-body">
-      <MarkdownRenderer content={markdown} dir={dir} className="lesson-body" />
+      <AnnotatableContent
+        content={markdown}
+        dir={dir}
+        className="lesson-body"
+        courseId={courseId}
+        sectionId={sectionId}
+        surface="lesson"
+      />
       <div className="phase-actions">
         <button className="continue-btn" onClick={onContinue}>
           <span>{continueLabel}</span>

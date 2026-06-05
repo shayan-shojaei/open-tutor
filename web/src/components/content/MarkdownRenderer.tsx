@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
@@ -13,7 +14,7 @@ interface MarkdownRendererProps {
   className?: string;
 }
 
-export function MarkdownRenderer({ content, dir = "ltr", className }: MarkdownRendererProps) {
+export const MarkdownRenderer = memo(function MarkdownRenderer({ content, dir = "ltr", className }: MarkdownRendererProps) {
   return (
     <div dir={dir} className={className ?? "md"}>
       <ReactMarkdown
@@ -88,4 +89,4 @@ export function MarkdownRenderer({ content, dir = "ltr", className }: MarkdownRe
       </ReactMarkdown>
     </div>
   );
-}
+});

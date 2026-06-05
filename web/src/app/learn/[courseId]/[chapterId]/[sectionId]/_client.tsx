@@ -177,6 +177,8 @@ export default function SectionPage() {
               dir={dir}
               continueLabel={lessonContinueLabel}
               onContinue={handleLessonContinue}
+              courseId={courseId}
+              sectionId={sectionId}
             />
           )}
 
@@ -188,6 +190,8 @@ export default function SectionPage() {
                 ? (dir === "rtl" ? "ادامه به آزمون" : "Continue to Quiz")
                 : (dir === "rtl" ? "تکمیل بخش" : "Complete section")}
               onComplete={handlePracticeComplete}
+              courseId={courseId}
+              sectionId={sectionId}
             />
           )}
 

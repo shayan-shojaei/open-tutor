@@ -97,6 +97,21 @@ export interface QuizConfig {
   questionCount: number; // calculated at load time, not stored in file
 }
 
+export interface Annotation {
+  id: string;
+  courseId: string;
+  sectionId: string;
+  surface: "lesson" | `problem-${string}`;
+  selectedText: string;
+  note?: string;
+  color: "yellow" | "green" | "blue";
+  createdAt: number;
+  startOffset: number;
+  endOffset: number;
+  prefix: string;
+  suffix: string;
+}
+
 export interface StandaloneQuizQuestion {
   id: string;
   type: "multiple-choice" | "written";

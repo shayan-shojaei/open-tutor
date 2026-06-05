@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Problem } from "@/lib/types";
-import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
+import { AnnotatableContent } from "@/components/annotations/AnnotatableContent";
 import { ChevronDown, ArrowRight, ArrowLeft } from "lucide-react";
 
 interface ProblemViewProps {
@@ -10,9 +10,18 @@ interface ProblemViewProps {
   dir: "ltr" | "rtl";
   continueLabel: string;
   onComplete: () => void;
+  courseId: string;
+  sectionId: string;
 }
 
-export function ProblemView({ problems, dir, continueLabel, onComplete }: ProblemViewProps) {
+export function ProblemView({
+  problems,
+  dir,
+  continueLabel,
+  onComplete,
+  courseId,
+  sectionId,
+}: ProblemViewProps) {
   const [shown, setShown] = useState<Record<number, boolean>>({});
   const FwdIcon = dir === "rtl" ? ArrowLeft : ArrowRight;
   const L = (en: string, fa: string) => (dir === "rtl" ? fa : en);
@@ -25,7 +34,14 @@ export function ProblemView({ problems, dir, continueLabel, onComplete }: Proble
             {L("Problem ", "مسئله ")}
             {idx + 1}
           </div>
-          <MarkdownRenderer content={problem.statement} dir={dir} className="problem-prompt" />
+          <AnnotatableContent
+            content={problem.statement}
+            dir={dir}
+            className="problem-prompt"
+            courseId={courseId}
+            sectionId={sectionId}
+            surface={`problem-${problem.id}`}
+          />
           <button
             className="solution-toggle"
             onClick={() => setShown((s) => ({ ...s, [idx]: !s[idx] }))}
@@ -41,7 +57,14 @@ export function ProblemView({ problems, dir, continueLabel, onComplete }: Proble
           </button>
           {shown[idx] && (
             <div className="solution">
-              <MarkdownRenderer content={problem.solution} dir={dir} className="step-body" />
+              <AnnotatableContent
+                content={problem.solution}
+                dir={dir}
+                className="step-body"
+                courseId={courseId}
+                sectionId={sectionId}
+                surface={`problem-${problem.id}-solution`}
+              />
             </div>
           )}
         </div>
