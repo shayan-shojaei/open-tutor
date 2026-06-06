@@ -9,7 +9,7 @@ import (
 	"github.com/shayan-shojaei/open-tutor/internal/config"
 )
 
-func Start(appDir, modulesDir string, port int, detach bool) error {
+func Start(appDir, modulesDir string, port int, detach bool, onReady func()) error {
 	serverJS := filepath.Join(appDir, "server.js")
 	if _, err := os.Stat(serverJS); os.IsNotExist(err) {
 		return fmt.Errorf("web app not installed — run `tutor install` first")
@@ -28,9 +28,9 @@ func Start(appDir, modulesDir string, port int, detach bool) error {
 	)
 
 	if detach {
-		return startDetached(cmd, port)
+		return startDetached(cmd, port, onReady)
 	}
-	return startForeground(cmd, port)
+	return startForeground(cmd, port, onReady)
 }
 
 func logPath() string { return config.LogFile() }

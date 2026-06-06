@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/shayan-shojaei/open-tutor/internal/config"
 	"github.com/shayan-shojaei/open-tutor/internal/server"
 	"github.com/spf13/cobra"
@@ -24,7 +26,13 @@ var startCmd = &cobra.Command{
 		if cmd.Flags().Changed("port") {
 			port = startPort
 		}
-		return server.Start(config.AppDir(), config.ModulesDir(), port, !startForeground)
+
+		port = findAvailablePort(port)
+		fmt.Printf("Starting on port %d...\n", port)
+		
+		return server.Start(config.AppDir(), config.ModulesDir(), port, !startForeground, func() {
+			openBrowser(fmt.Sprintf("http://localhost:%d", port))
+		})
 	},
 }
 
