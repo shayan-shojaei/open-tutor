@@ -64,9 +64,25 @@ export interface FlashCardProgressMap {
   [deckId: string]: { easy: string[]; hard: string[]; unknown: string[] };
 }
 
+export interface XPLogEntry {
+  date: string;   // "YYYY-MM-DD"
+  amount: number;
+  reason: string;
+}
+
+export interface GamificationState {
+  streak: number;
+  longestStreak: number;
+  xp: number;
+  level: number;
+  lastActiveDate: string; // "YYYY-MM-DD"
+  xpLog: XPLogEntry[];
+}
+
 export interface Progress {
   flashcards?: FlashCardProgressMap;
-  [courseId: string]: CourseProgress | FlashCardProgressMap | undefined;
+  gamification?: GamificationState;
+  [courseId: string]: CourseProgress | FlashCardProgressMap | GamificationState | undefined;
 }
 
 export interface FlashCardDeck {
