@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/header.png" alt="Open Tutor" style="max-height: 300px;"/>
+</p>
+
 # Open Tutor
 
 A self-hosted, interactive learning environment you run entirely on your own machine.
