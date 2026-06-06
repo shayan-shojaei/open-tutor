@@ -9,9 +9,10 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"time"
 )
 
-func startDetached(cmd *exec.Cmd, port int) error {
+func startDetached(cmd *exec.Cmd, port int, onReady func()) error {
 	logFile, err := os.OpenFile(logPath(), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to open log file: %w", err)
@@ -33,10 +34,16 @@ func startDetached(cmd *exec.Cmd, port int) error {
 	fmt.Printf("Open Tutor started (pid %d) at http://localhost:%d\n", cmd.Process.Pid, port)
 	fmt.Printf("Logs: %s\n", logPath())
 	fmt.Println("Run `tutor stop` to shut it down.")
+
+	if onReady != nil {
+		time.Sleep(1 * time.Second)
+		onReady()
+	}
+
 	return nil
 }
 
-func startForeground(cmd *exec.Cmd, port int) error {
+func startForeground(cmd *exec.Cmd, port int, onReady func()) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -46,6 +53,13 @@ func startForeground(cmd *exec.Cmd, port int) error {
 
 	fmt.Printf("Open Tutor is running at http://localhost:%d\n", port)
 	fmt.Println("Press Ctrl-C to stop.")
+
+	if onReady != nil {
+		go func() {
+			time.Sleep(1 * time.Second)
+			onReady()
+		}()
+	}
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt)
