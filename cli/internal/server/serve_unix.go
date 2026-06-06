@@ -7,28 +7,13 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 )
 
-// need to open browser locally before starting the server
-func openBrowser(url string) {
-	var cmd *exec.Cmd
-	switch runtime.GOOS {
-	case "darwin":
-		cmd = exec.Command("open", url)
-	case "windows":
-		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
-	default:
-		cmd = exec.Command("xdg-open", url)
-	}
-	_ = cmd.Start()
-}
-
-func startDetached(cmd *exec.Cmd, port int) error {
+func startDetached(cmd *exec.Cmd, port int, onReady func()) error {
 	logFile, err := os.OpenFile(logPath(), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to open log file: %w", err)
@@ -52,13 +37,15 @@ func startDetached(cmd *exec.Cmd, port int) error {
 	fmt.Printf("Logs: %s\n", logPath())
 	fmt.Println("Run `tutor stop` to shut it down.")
 
-	time.Sleep(1 * time.Second)
-	openBrowser(fmt.Sprintf("http://localhost:%d", port))
+	if onReady != nil {
+		time.Sleep(1 * time.Second)
+		onReady()
+	}
 
 	return nil
 }
 
-func startForeground(cmd *exec.Cmd, port int) error {
+func startForeground(cmd *exec.Cmd, port int, onReady func()) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -68,6 +55,13 @@ func startForeground(cmd *exec.Cmd, port int) error {
 
 	fmt.Printf("Open Tutor is running at http://localhost:%d\n", port)
 	fmt.Println("Press Ctrl-C to stop.")
+
+	if onReady != nil {
+		go func() {
+			time.Sleep(1 * time.Second)
+			onReady()
+		}()
+	}
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)

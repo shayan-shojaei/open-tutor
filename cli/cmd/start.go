@@ -29,9 +29,10 @@ var startCmd = &cobra.Command{
 
 		port = findAvailablePort(port)
 		fmt.Printf("Starting on port %d...\n", port)
-		go openBrowser(fmt.Sprintf("http://localhost:%d", port))
-
-		return server.Start(config.AppDir(), config.ModulesDir(), port, !startForeground)
+		
+		return server.Start(config.AppDir(), config.ModulesDir(), port, !startForeground, func() {
+			openBrowser(fmt.Sprintf("http://localhost:%d", port))
+		})
 	},
 }
 
