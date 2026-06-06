@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { FlashCard } from "@/lib/types";
 import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
 import { getFlashCardProgress, saveFlashCardProgress } from "@/lib/progress";
+import { awardXP } from "@/lib/gamification";
 import { Check, Minus, X, RotateCcw, BookOpen, Layers, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface FlashCardViewProps {
@@ -19,13 +20,7 @@ interface FlashCardViewProps {
 type Bucket = "easy" | "hard" | "unknown";
 
 export function FlashCardView({
-  cards,
-  deckId,
-  deckTitle,
-  deckDescription,
-  sourceCourse,
-  language,
-  onBack,
+  cards, deckId, deckTitle, deckDescription, sourceCourse, language, onBack,
 }: FlashCardViewProps) {
   const isRtl = language === "fa";
   const dir = isRtl ? "rtl" : "ltr";
@@ -38,6 +33,7 @@ export function FlashCardView({
   const [ratings, setRatings] = useState({ easy: 0, hard: 0, miss: 0 });
   const [missed, setMissed] = useState<number[]>([]);
   const [done, setDone] = useState(false);
+  const xpAwarded = useRef(false);
 
   const [easy, setEasy] = useState<string[]>([]);
   const [hard, setHard] = useState<string[]>([]);
@@ -71,15 +67,20 @@ export function FlashCardView({
     const nextPos = pos + 1;
     setFlipped(false);
     setTimeout(() => {
-      if (nextPos >= total) setDone(true);
-      else setPos(nextPos);
+      if (nextPos >= total) {
+        setDone(true);
+        if (!xpAwarded.current && nextPos >= 5) {
+          awardXP(10, "flashcard-session");
+          xpAwarded.current = true;
+        }
+      } else {
+        setPos(nextPos);
+      }
     }, 180);
   }
 
   function restart(onlyMissed: boolean) {
-    const q = onlyMissed && missed.length > 0
-      ? missed.map((i) => queue[i])
-      : cards;
+    const q = onlyMissed && missed.length > 0 ? missed.map((i) => queue[i]) : cards;
     setQueue(q);
     setPos(0);
     setFlipped(false);
@@ -89,6 +90,7 @@ export function FlashCardView({
     setEasy([]);
     setHard([]);
     setUnknown([]);
+    xpAwarded.current = false;
     saveFlashCardProgress(deckId, [], [], []);
   }
 
@@ -104,10 +106,9 @@ export function FlashCardView({
       <div className="fc-page" dir={dir}>
         {backBtn}
         <div className="fc-done">
-          <div className="fc-done-ic">
-            <BookOpen size={34} />
-          </div>
+          <div className="fc-done-ic"><BookOpen size={34} /></div>
           <h2 className="fc-done-title">{L("Session Complete!", "جلسه تمام شد!")}</h2>
+          {total >= 5 && <p className="fc-xp-earned">+10 XP earned ⚡</p>}
           <div className="fc-stats">
             <div className="fc-stat easy">
               <span className="fc-stat-n">{ratings.easy}</span>
@@ -142,7 +143,6 @@ export function FlashCardView({
   return (
     <div className="fc-page" dir={dir}>
       {backBtn}
-
       <div className="fc-header">
         <h1 className="fc-title">{deckTitle}</h1>
         <p className="fc-desc">{deckDescription}</p>
@@ -150,22 +150,15 @@ export function FlashCardView({
           <div className="fc-source">{L("based on", "بر اساس")}: {sourceCourse}</div>
         )}
       </div>
-
       <div className="fc-progress-row">
-        <span className="fc-count">
-          {L(`Card ${pos + 1} of ${total}`, `کارت ${pos + 1} از ${total}`)}
-        </span>
+        <span className="fc-count">{L(`Card ${pos + 1} of ${total}`, `کارت ${pos + 1} از ${total}`)}</span>
         <span className="fc-pct">{pct}%</span>
       </div>
       <div className="fc-bar">
         <div className="fc-bar-fill" style={{ width: `${pct}%` }} />
       </div>
-
       <div className="fc-stage">
-        <div
-          className={`fc-card${flipped ? " flipped" : ""}`}
-          onClick={() => setFlipped((f) => !f)}
-        >
+        <div className={`fc-card${flipped ? " flipped" : ""}`} onClick={() => setFlipped((f) => !f)}>
           <div className="fc-face fc-front">
             <span className="fc-side-badge">{L("Front", "جلو")}</span>
             <MarkdownRenderer content={card.front} dir={dir} className="fc-content" />
@@ -177,19 +170,15 @@ export function FlashCardView({
           </div>
         </div>
       </div>
-
       <div className={`fc-ratings${flipped ? " show" : ""}`}>
         <button className="rate-btn easy" disabled={!flipped} onClick={() => rate("easy")}>
-          <Check size={18} />
-          <span>{L("Easy", "آسان")}</span>
+          <Check size={18} /><span>{L("Easy", "آسان")}</span>
         </button>
         <button className="rate-btn hard" disabled={!flipped} onClick={() => rate("hard")}>
-          <Minus size={18} />
-          <span>{L("Hard", "سخت")}</span>
+          <Minus size={18} /><span>{L("Hard", "سخت")}</span>
         </button>
         <button className="rate-btn miss" disabled={!flipped} onClick={() => rate("unknown")}>
-          <X size={18} />
-          <span>{L("Don't know", "بلد نیستم")}</span>
+          <X size={18} /><span>{L("Don't know", "بلد نیستم")}</span>
         </button>
       </div>
     </div>
