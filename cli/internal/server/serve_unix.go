@@ -7,10 +7,26 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
+
+// need to open browser locally before starting the server
+func openBrowser(url string) {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "darwin":
+		cmd = exec.Command("open", url)
+	case "windows":
+		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+	default:
+		cmd = exec.Command("xdg-open", url)
+	}
+	_ = cmd.Start()
+}
 
 func startDetached(cmd *exec.Cmd, port int) error {
 	logFile, err := os.OpenFile(logPath(), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
@@ -35,6 +51,10 @@ func startDetached(cmd *exec.Cmd, port int) error {
 	fmt.Printf("Open Tutor started (pid %d) at http://localhost:%d\n", cmd.Process.Pid, port)
 	fmt.Printf("Logs: %s\n", logPath())
 	fmt.Println("Run `tutor stop` to shut it down.")
+
+	time.Sleep(1 * time.Second)
+	openBrowser(fmt.Sprintf("http://localhost:%d", port))
+
 	return nil
 }
 
