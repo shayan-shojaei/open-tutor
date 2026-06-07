@@ -1079,16 +1079,21 @@ html, body { overflow-x: clip; }
 }
 .level-sub { font-size: 13px; color: var(--ink-3); margin: 0; }
 
-/* Heatmap */
+/* Heatmap — GitHub-style contribution grid: 7 weekday rows × 12 week columns */
 .heatmap {
-  display: grid; grid-template-columns: repeat(84, 1fr); gap: 3px;
-  width: 100%; overflow-x: auto; padding-bottom: 4px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 1fr);
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  width: 100%; max-width: 380px;
 }
 .heatmap-cell {
   aspect-ratio: 1; border-radius: 3px;
   background: var(--surface-sunk); border: 1px solid var(--line);
-  min-width: 10px;
+  transition: transform .12s ease;
 }
+.heatmap-cell:hover { transform: scale(1.2); z-index: 1; }
 .heatmap-cell.active { background: var(--accent); border-color: var(--accent-press); }
 .heatmap-cell.today { outline: 2px solid var(--accent); outline-offset: 1px; }
 
