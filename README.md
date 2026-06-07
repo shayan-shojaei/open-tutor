@@ -49,6 +49,20 @@ Sample modules: **[open-tutor-sample-modules](https://github.com/shayan-shojaei/
 
 > **New to terminals?** See the [step-by-step installation guide](INSTALL.md) for detailed instructions with no assumed experience.
 
+> **Upgrading from v0.6.1 or earlier?** Those versions' `tutor upgrade` only refreshed the
+> web app and left the CLI binary untouched, so it kept reporting an old version (e.g. `0.1.0`).
+> Reinstall once to get the self-updating CLI — after that, `tutor upgrade` keeps both the
+> binary and web app current.
+>
+> ```bash
+> # macOS / Linux
+> curl -fsSL https://raw.githubusercontent.com/shayan-shojaei/open-tutor/main/install.sh | bash
+> ```
+> ```powershell
+> # Windows (PowerShell)
+> irm https://raw.githubusercontent.com/shayan-shojaei/open-tutor/main/install.ps1 | iex
+> ```
+
 ### macOS / Linux — one-liner install
 
 ```bash
@@ -242,7 +256,7 @@ Full schema definitions are in `web/src/lib/types.ts`.
 ```
 tutor init                               Create ~/.tutor/ structure
 tutor install [--version v1.2.3]         Download the web app
-tutor upgrade                            Upgrade to the latest release
+tutor upgrade                            Upgrade the CLI binary and web app to the latest release
 tutor start [--port N]                   Serve the web app
 tutor uninstall                          Remove Open Tutor (prompts to keep/delete modules)
 

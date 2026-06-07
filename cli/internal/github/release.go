@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -38,6 +39,72 @@ func LatestReleaseTag() (string, error) {
 		return "", err
 	}
 	return r.TagName, nil
+}
+
+// cliAssetName returns the release asset name for the tutor CLI binary on the
+// current platform (e.g. "tutor-darwin-arm64"). It mirrors the asset names
+// produced by the release workflow.
+func cliAssetName() (string, error) {
+	switch runtime.GOOS {
+	case "darwin":
+		switch runtime.GOARCH {
+		case "amd64":
+			return "tutor-darwin-amd64", nil
+		case "arm64":
+			return "tutor-darwin-arm64", nil
+		}
+	case "linux":
+		if runtime.GOARCH == "amd64" {
+			return "tutor-linux-amd64", nil
+		}
+	case "windows":
+		if runtime.GOARCH == "amd64" {
+			return "tutor-windows-amd64.exe", nil
+		}
+	}
+	return "", fmt.Errorf("no prebuilt tutor binary for %s/%s", runtime.GOOS, runtime.GOARCH)
+}
+
+// DownloadCLIBinary fetches the tutor CLI binary asset for the current platform
+// from the given release and returns its raw bytes. Unlike the web-app tarball,
+// the CLI binaries ship without a checksum asset, so none is verified here.
+func DownloadCLIBinary(version string) ([]byte, error) {
+	assetName, err := cliAssetName()
+	if err != nil {
+		return nil, err
+	}
+
+	var url string
+	if version == "" || version == "latest" {
+		url = fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", releaseRepo)
+	} else {
+		url = fmt.Sprintf("https://api.github.com/repos/%s/releases/tags/%s", releaseRepo, version)
+	}
+
+	resp, err := httpGet(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var r release
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return nil, err
+	}
+
+	var binURL string
+	for _, a := range r.Assets {
+		if a.Name == assetName {
+			binURL = a.BrowserDownloadURL
+			break
+		}
+	}
+	if binURL == "" {
+		return nil, fmt.Errorf("no %s asset found in release %s", assetName, r.TagName)
+	}
+
+	fmt.Printf("Downloading tutor CLI %s (%s)...\n", r.TagName, assetName)
+	return downloadBytes(binURL)
 }
 
 func DownloadRelease(version, destDir string) error {
