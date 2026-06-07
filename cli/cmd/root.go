@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/shayan-shojaei/open-tutor/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -8,7 +9,7 @@ var rootCmd = &cobra.Command{
 	Use:     "tutor",
 	Short:   "Open Tutor — self-hosted interactive learning",
 	Long:    "Open Tutor lets you install, manage, and serve learning modules (courses, flashcards, quizzes) locally.",
-	Version: "0.1.0",
+	Version: config.Version,
 }
 
 func Execute() error {

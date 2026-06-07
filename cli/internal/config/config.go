@@ -6,7 +6,10 @@ import (
 	"path/filepath"
 )
 
-const Version = "0.1.0"
+// Version is the CLI version. It is overridden at build time via
+// -ldflags "-X .../internal/config.Version=vX.Y.Z" (see release.yml).
+// It must be a var, not a const, for ldflags injection to work.
+var Version = "dev"
 
 type Repo struct {
 	Alias string `json:"alias"`
