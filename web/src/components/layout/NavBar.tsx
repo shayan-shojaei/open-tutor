@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Flame, Zap, BarChart2 } from "lucide-react";
+import { BookOpen, Flame, Zap, BarChart2, GraduationCap, Layers, ListChecks } from "lucide-react";
 import { useFontSize } from "@/lib/useFontSize";
 import { useEffect, useState } from "react";
 import { getGamification, isStreakAtRisk } from "@/lib/gamification";
@@ -56,12 +56,15 @@ export default function NavBar() {
         </Link>
         <nav className="nav-pills">
           <Link href="/" className={`nav-pill${isCourses ? " is-active" : ""}`}>
+            <GraduationCap size={14} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
             Courses
           </Link>
           <Link href="/flashcards" className={`nav-pill${isFlashCards ? " is-active" : ""}`}>
+            <Layers size={14} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
             Flash Cards
           </Link>
           <Link href="/quizzes" className={`nav-pill${isQuizzes ? " is-active" : ""}`}>
+            <ListChecks size={14} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
             Quizzes
           </Link>
           <Link href="/stats" className={`nav-pill${isStats ? " is-active" : ""}`}>
