@@ -1,6 +1,7 @@
 "use client";
 
 import type { CourseProgress, Progress } from "./types";
+import { awardXP } from "./gamification";
 
 const KEY = "teacher-progress";
 const LEGACY_COURSE_KEY = "moduleProgress";
@@ -9,7 +10,6 @@ const COURSE_KEY = "courseProgress";
 export function getProgress(): Progress {
   if (typeof window === "undefined") return {};
   try {
-    // Migrate legacy per-key storage if needed
     const legacy = localStorage.getItem(LEGACY_COURSE_KEY);
     const current = localStorage.getItem(COURSE_KEY);
     if (legacy && !current) {
@@ -34,12 +34,15 @@ export function markSectionComplete(courseId: string, sectionId: string, score: 
   const p = getProgress();
   if (!p[courseId]) p[courseId] = { completedSections: [], quizScores: {}, currentPhase: {} };
   const m = courseProgress(p, courseId);
-  if (!m.completedSections.includes(sectionId)) {
+  const isNew = !m.completedSections.includes(sectionId);
+  if (isNew) {
     m.completedSections.push(sectionId);
   }
   m.quizScores[sectionId] = score;
   m.currentPhase[sectionId] = "complete";
   setProgress(p);
+  if (isNew) awardXP(50, "section-complete");
+  if (score >= 70) awardXP(30, "quiz-pass");
 }
 
 export function setPhase(
