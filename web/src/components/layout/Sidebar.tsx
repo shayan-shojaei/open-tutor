@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { CourseConfig } from "@/lib/types";
 import { isSectionComplete, resetCourseProgress } from "@/lib/progress";
 import { CheckCircle2, Lock, ChevronDown, ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
+import { InlineLatex } from "@/components/ui/InlineLatex";
 
 interface SidebarProps {
   course: CourseConfig;
@@ -92,7 +93,7 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
             <div key={chapter.id} className="chapter">
               <button className="chapter-head" onClick={() => toggle(chapter.id)}>
                 <ChevronDown size={16} className={`chev${isOpen ? " open" : ""}`} />
-                <span className="chapter-title">{chapter.title}</span>
+                <InlineLatex text={chapter.title} className="chapter-title" />
               </button>
 
               {isOpen && (
@@ -111,7 +112,7 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
                             <span className="section-ic">
                               <Lock size={14} className="ic-lock" />
                             </span>
-                            <span className="section-label">{section.title}</span>
+                            <InlineLatex text={section.title} className="section-label" />
                           </span>
                         </li>
                       );
@@ -169,7 +170,7 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
                       href={`/learn/${course.id}/recap/${sid}`}
                       className={`section-item${isCurrent ? " is-active" : ""}`}
                     >
-                      <span className="section-label">{meta?.title ?? sid}</span>
+                      <InlineLatex text={meta?.title ?? sid} className="section-label" />
                     </Link>
                   </li>
                 );
