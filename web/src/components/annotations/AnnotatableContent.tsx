@@ -5,12 +5,7 @@ import { createPortal } from "react-dom";
 import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { AnnotationPopover } from "./AnnotationPopover";
-import {
-  getAnnotationsForSurface,
-  saveAnnotation,
-  updateAnnotation,
-  deleteAnnotation,
-} from "@/lib/annotations";
+import { useDataProvider } from "@/lib/data";
 import type { Annotation } from "@/lib/types";
 
 interface AnnotatableContentProps {
@@ -243,14 +238,15 @@ export function AnnotatableContent({
   sectionId,
   surface,
 }: AnnotatableContentProps) {
+  const dp = useDataProvider();
   const containerRef = useRef<HTMLDivElement>(null);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [toolbar, setToolbar] = useState<PendingSelection | null>(null);
   const [popover, setPopover] = useState<{ annotation: Annotation; rect: PlainRect } | null>(null);
 
   useEffect(() => {
-    setAnnotations(getAnnotationsForSurface(courseId, sectionId, surface));
-  }, [courseId, sectionId, surface]);
+    dp.getAnnotationsForSurface(courseId, sectionId, surface).then(setAnnotations);
+  }, [courseId, sectionId, surface, dp]);
 
   useLayoutEffect(() => {
     const el = containerRef.current;
@@ -299,8 +295,8 @@ export function AnnotatableContent({
   }, []);
 
   const refreshAnnotations = useCallback(() => {
-    setAnnotations(getAnnotationsForSurface(courseId, sectionId, surface));
-  }, [courseId, sectionId, surface]);
+    dp.getAnnotationsForSurface(courseId, sectionId, surface).then(setAnnotations);
+  }, [courseId, sectionId, surface, dp]);
 
   function handleMouseUp(e: React.MouseEvent) {
     const target = e.target as HTMLElement;
@@ -336,9 +332,9 @@ export function AnnotatableContent({
     setToolbar({ rect: toPlainRect(range.getBoundingClientRect()), selectedText, ...offsets });
   }
 
-  function handleAnnotate(color: Annotation["color"], note?: string) {
+  async function handleAnnotate(color: Annotation["color"], note?: string) {
     if (!toolbar) return;
-    saveAnnotation({
+    await dp.saveAnnotation({
       id: crypto.randomUUID(),
       courseId, sectionId, surface,
       selectedText: toolbar.selectedText,
@@ -354,15 +350,15 @@ export function AnnotatableContent({
     refreshAnnotations();
   }
 
-  function handleUpdate(changes: Partial<Pick<Annotation, "note" | "color">>) {
+  async function handleUpdate(changes: Partial<Pick<Annotation, "note" | "color">>) {
     if (!popover) return;
-    updateAnnotation(popover.annotation.id, changes);
+    await dp.updateAnnotation(popover.annotation.id, changes);
     refreshAnnotations();
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!popover) return;
-    deleteAnnotation(popover.annotation.id);
+    await dp.deleteAnnotation(popover.annotation.id);
     setPopover(null);
     refreshAnnotations();
   }

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Newsreader, Hanken_Grotesk, JetBrains_Mono, Vazirmatn } from "next/font/google";
 import "./globals.css";
-import NavBar from "@/components/layout/NavBar";
+import { ConditionalNavBar } from "@/components/layout/ConditionalNavBar";
+import { DataProviderWrapper } from "@/components/providers/DataProviderWrapper";
+import { SessionProviderWrapper } from "@/components/providers/SessionProviderWrapper";
 
 const serif = Newsreader({
   subsets: ["latin"],
@@ -38,8 +40,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${serif.variable} ${sans.variable} ${mono.variable} ${vazirmatn.variable}`}
     >
       <body className="antialiased">
-        <NavBar />
-        {children}
+        <SessionProviderWrapper>
+          <DataProviderWrapper>
+            <ConditionalNavBar />
+            {children}
+          </DataProviderWrapper>
+        </SessionProviderWrapper>
       </body>
     </html>
   );

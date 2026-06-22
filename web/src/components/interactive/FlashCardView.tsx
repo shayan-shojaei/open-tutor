@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { FlashCard } from "@/lib/types";
 import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
-import { getFlashCardProgress, saveFlashCardProgress } from "@/lib/progress";
-import { awardXP } from "@/lib/gamification";
+import { useDataProvider } from "@/lib/data";
 import { Check, Minus, X, RotateCcw, BookOpen, Layers, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface FlashCardViewProps {
@@ -35,16 +34,18 @@ export function FlashCardView({
   const [done, setDone] = useState(false);
   const xpAwarded = useRef(false);
 
+  const dp = useDataProvider();
   const [easy, setEasy] = useState<string[]>([]);
   const [hard, setHard] = useState<string[]>([]);
   const [unknown, setUnknown] = useState<string[]>([]);
 
   useEffect(() => {
-    const saved = getFlashCardProgress(deckId);
-    setEasy(saved.easy);
-    setHard(saved.hard);
-    setUnknown(saved.unknown);
-  }, [deckId]);
+    dp.getFlashCardProgress(deckId).then((saved) => {
+      setEasy(saved.easy);
+      setHard(saved.hard);
+      setUnknown(saved.unknown);
+    });
+  }, [deckId, dp]);
 
   const total = queue.length;
   const card = queue[pos];
@@ -59,7 +60,7 @@ export function FlashCardView({
     setEasy(newEasy);
     setHard(newHard);
     setUnknown(newUnknown);
-    saveFlashCardProgress(deckId, newEasy, newHard, newUnknown);
+    void dp.saveFlashCardProgress(deckId, newEasy, newHard, newUnknown);
 
     setRatings((r) => ({ ...r, [kind === "unknown" ? "miss" : kind]: r[kind === "unknown" ? "miss" : kind] + 1 }));
     if (kind !== "easy") setMissed((m) => [...m, pos]);
@@ -70,7 +71,7 @@ export function FlashCardView({
       if (nextPos >= total) {
         setDone(true);
         if (!xpAwarded.current && nextPos >= 5) {
-          awardXP(10, "flashcard-session");
+          void dp.awardXP(10, "flashcard-session");
           xpAwarded.current = true;
         }
       } else {
@@ -91,7 +92,7 @@ export function FlashCardView({
     setHard([]);
     setUnknown([]);
     xpAwarded.current = false;
-    saveFlashCardProgress(deckId, [], [], []);
+    void dp.saveFlashCardProgress(deckId, [], [], []);
   }
 
   const backBtn = (

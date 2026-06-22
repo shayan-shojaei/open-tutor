@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { CourseConfig, FlashCardDeck, GamificationState } from "@/lib/types";
-import { getProgress } from "@/lib/progress";
-import { getGamification, xpToNextLevel, levelProgress } from "@/lib/gamification";
+import { xpToNextLevel, levelProgress } from "@/lib/gamification";
+import { useDataProvider } from "@/lib/data";
+import type { Progress } from "@/lib/types";
 import Link from "next/link";
 import { Flame, Zap, BookOpen, Layers, Trophy } from "lucide-react";
 
@@ -28,13 +29,16 @@ function getLast12Weeks(): string[] {
 }
 
 export default function StatsClient({ courses, decks }: Props) {
+  const dp = useDataProvider();
   const [gami, setGami] = useState<GamificationState | null>(null);
-  const [progress, setProgress] = useState<ReturnType<typeof getProgress> | null>(null);
+  const [progress, setProgress] = useState<Progress | null>(null);
 
   useEffect(() => {
-    setGami(getGamification());
-    setProgress(getProgress());
-  }, []);
+    Promise.all([dp.getGamification(), dp.getProgress()]).then(([g, p]) => {
+      setGami(g);
+      setProgress(p);
+    });
+  }, [dp]);
 
   if (!gami || !progress) return <div className="app-main"><div className="page"><p>Loading…</p></div></div>;
 
