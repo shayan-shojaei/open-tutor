@@ -49,7 +49,9 @@ export function AnnotationPopover({
     <div
       className="annotation-popover"
       style={{ top, left }}
-      onMouseDown={(e) => e.preventDefault()}
+      onMouseDown={(e) => {
+        if (!(e.target as HTMLElement).closest("textarea, input")) e.preventDefault();
+      }}
     >
       <div className="annotation-popover-header">
         <div className="annotation-popover-swatches">
@@ -79,6 +81,9 @@ export function AnnotationPopover({
           placeholder="Add a note…"
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSave();
+          }}
           rows={3}
         />
       </div>

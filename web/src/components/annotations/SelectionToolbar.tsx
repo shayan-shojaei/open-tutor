@@ -51,7 +51,9 @@ export function SelectionToolbar({ rect, onAnnotate, onDismiss }: SelectionToolb
     <div
       className="annotation-toolbar"
       style={{ top, left }}
-      onMouseDown={(e) => e.preventDefault()}
+      onMouseDown={(e) => {
+        if (!(e.target as HTMLElement).closest("textarea, input")) e.preventDefault();
+      }}
     >
       {noteMode ? (
         <div className="annotation-toolbar-note">
@@ -65,12 +67,15 @@ export function SelectionToolbar({ rect, onAnnotate, onDismiss }: SelectionToolb
               />
             ))}
           </div>
-          <input
+          <textarea
             className="annotation-note-input"
             placeholder="Add a note…"
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleNoteSubmit()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleNoteSubmit();
+            }}
+            rows={2}
             autoFocus
           />
           <button className="annotation-toolbar-btn" onClick={handleNoteSubmit} title="Save">
