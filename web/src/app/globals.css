@@ -903,8 +903,8 @@ html, body { overflow-x: clip; }
   backdrop-filter: blur(12px) saturate(1.2);
   pointer-events: auto; white-space: nowrap;
 }
-.annotation-toolbar-row,
-.annotation-toolbar-note { display: flex; align-items: center; gap: 7px; }
+.annotation-toolbar-row { display: flex; align-items: center; gap: 7px; }
+.annotation-toolbar-note { display: flex; align-items: flex-start; gap: 7px; }
 .annotation-toolbar-divider { width: 1px; height: 18px; background: var(--line); flex-shrink: 0; }
 .annotation-toolbar-icon {
   display: flex; align-items: center; justify-content: center;
@@ -946,6 +946,7 @@ html, body { overflow-x: clip; }
   border: 1px solid var(--line); border-radius: var(--r-sm);
   padding: 5px 10px; outline: none; width: 190px;
   transition: border-color .15s;
+  resize: vertical; line-height: 1.5; min-height: 32px;
 }
 .annotation-note-input::placeholder { color: var(--ink-3); }
 .annotation-note-input:focus { border-color: var(--accent); }
