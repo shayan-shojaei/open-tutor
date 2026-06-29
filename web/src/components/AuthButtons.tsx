@@ -5,10 +5,17 @@ import { LogIn, LogOut, User } from "lucide-react";
 
 const isHosted = process.env.NEXT_PUBLIC_APP_MODE === "hosted";
 
+// In local mode there is no SessionProvider, so useSession() must never run.
+// Gate it behind isHosted before any hook is called.
 export function AuthButtons() {
+  if (!isHosted) return null;
+  return <HostedAuthButtons />;
+}
+
+function HostedAuthButtons() {
   const { data: session, status } = useSession();
 
-  if (!isHosted || status === "loading") return null;
+  if (status === "loading") return null;
 
   if (!session) {
     return (
