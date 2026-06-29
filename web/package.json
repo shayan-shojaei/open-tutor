@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "open-tutor-web",
   "version": "0.7.2",
   "private": true,
   "scripts": {
