@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { isStreakAtRisk } from "@/lib/gamification";
 import { useDataProvider } from "@/lib/data";
 import type { GamificationState } from "@/lib/types";
-import { AuthButtons } from "@/components/AuthButtons";
 
 function GamificationBadge() {
   const dp = useDataProvider();
@@ -77,7 +76,6 @@ export default function NavBar() {
         </nav>
         <div className="navbar-right">
           <GamificationBadge />
-          <AuthButtons />
           {isLearnPage && (
             <div className="font-size-controls">
               <button onClick={decrease} disabled={!canDecrease} aria-label="Decrease font size">A−</button>

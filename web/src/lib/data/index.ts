@@ -3,12 +3,15 @@
 import { createContext, useContext } from "react";
 import type { DataProvider } from "./DataProvider";
 import { LocalProvider } from "./LocalProvider";
-import { HostedProvider } from "./HostedProvider";
 
 export type { DataProvider } from "./DataProvider";
 
 export function createDataProvider(): DataProvider {
-  if (process.env.NEXT_PUBLIC_APP_MODE === "hosted") return new HostedProvider();
+  // Hosted mode lives in the private open-tutor-hosted repo, which supplies its
+  // own HostedProvider. The open-source build is local-only.
+  if (process.env.NEXT_PUBLIC_APP_MODE === "hosted") {
+    throw new Error("Hosted mode is not available in the open-source build");
+  }
   return new LocalProvider();
 }
 
