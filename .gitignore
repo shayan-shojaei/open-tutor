@@ -1,3 +1,10 @@
+## pnpm / monorepo
+node_modules/
+packages/*/dist/
+packages/*/node_modules/
+server/dist/
+server/node_modules/
+
 ## CLI build artifacts
 cli/tutor
 cli/tutor.exe
@@ -8,6 +15,9 @@ web/.next/
 web/out/
 web/node_modules/
 web/.env*.local
+
+## Secrets — matches .env at any depth (server/.env, etc.); .env.example is unaffected
+.env
 
 ## Demo build artifacts (generated at build time)
 web/public/_data/

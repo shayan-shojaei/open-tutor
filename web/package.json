@@ -1,15 +1,17 @@
 {
-  "name": "open-tutor-web",
+  "name": "web",
   "version": "0.7.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:hosted": "NEXT_PUBLIC_APP_MODE=hosted next dev",
     "build": "next build",
     "build:demo": "TUTOR_MODULES_DIR=../demo-modules NEXT_PUBLIC_DEMO=true NEXT_PUBLIC_BASE_PATH=/open-tutor tsx scripts/generate-demo-data.ts && TUTOR_MODULES_DIR=../demo-modules NEXT_PUBLIC_DEMO=true NEXT_PUBLIC_BASE_PATH=/open-tutor next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@open-tutor/shared": "workspace:*",
     "@radix-ui/react-progress": "^1.1.8",
     "@radix-ui/react-separator": "^1.1.8",
     "@tailwindcss/typography": "^0.5.19",

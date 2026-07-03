@@ -5,17 +5,19 @@ import { usePathname } from "next/navigation";
 import { BookOpen, Flame, Zap, BarChart2, GraduationCap, Layers, ListChecks } from "lucide-react";
 import { useFontSize } from "@/lib/useFontSize";
 import { useEffect, useState } from "react";
-import { getGamification, isStreakAtRisk } from "@/lib/gamification";
+import { isStreakAtRisk } from "@/lib/gamification";
+import { useDataProvider } from "@/lib/data";
 import type { GamificationState } from "@/lib/types";
 
 function GamificationBadge() {
+  const dp = useDataProvider();
   const [state, setState] = useState<GamificationState | null>(null);
 
   useEffect(() => {
-    setState(getGamification());
-    const id = setInterval(() => setState(getGamification()), 5000);
+    dp.getGamification().then(setState);
+    const id = setInterval(() => dp.getGamification().then(setState), 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [dp]);
 
   if (!state || (state.xp === 0 && state.streak === 0)) return null;
 

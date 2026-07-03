@@ -1,0 +1,16 @@
+name: leak-guard
+on: [push, pull_request]
+jobs:
+  no-hosted-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject hosted/infra paths in the public repo
+        run: |
+          BAD=$(git ls-files | grep -E '^(server/|web/Dockerfile$|docker-compose\.yml$|web/src/app/(landing|auth|billing|generate)/|web/src/app/api/(auth|backend)/|web/src/lib/(auth|prisma)\.ts$)' || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::These hosted/infra paths must never be in the public repo:"
+            echo "$BAD"
+            exit 1
+          fi
+          echo "OK — no hosted/infra paths present."

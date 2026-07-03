@@ -1,0 +1,19 @@
+{
+  "name": "open-tutor",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev:local": "pnpm --filter web dev",
+    "dev:hosted": "docker compose up --build",
+    "infra:up": "docker compose up -d postgres redis minio minio-init",
+    "infra:down": "docker compose down",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

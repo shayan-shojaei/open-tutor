@@ -7,10 +7,11 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { LessonView } from "@/components/content/LessonView";
 import { ProblemView } from "@/components/interactive/ProblemView";
 import { QuizView } from "@/components/interactive/QuizView";
-import { setPhase, markSectionComplete, getProgress } from "@/lib/progress";
+import { useDataProvider } from "@/lib/data";
 import type { CourseProgress } from "@/lib/types";
 import { ChevronRight, Menu, PartyPopper } from "lucide-react";
-import { apiUrl } from "@/lib/api-url";
+
+import type { DataProvider } from "@/lib/data";
 
 type Phase = "lesson" | "practice" | "quiz" | "complete";
 
@@ -21,7 +22,35 @@ const phaseLabels: Record<Phase, string> = {
   complete: "Complete",
 };
 
+function CourseProgressBar({
+  courseConfig,
+  courseId,
+  dp,
+}: {
+  courseConfig: CourseConfig;
+  courseId: string;
+  dp: DataProvider;
+}) {
+  const [completedCount, setCompletedCount] = useState(0);
+  const allSections = courseConfig.chapters.flatMap((c) => c.sections);
+
+  useEffect(() => {
+    dp.getProgress().then((progress) => {
+      const cp = progress[courseId] as CourseProgress | undefined;
+      setCompletedCount(cp?.completedSections?.length ?? 0);
+    });
+  }, [courseId, dp]);
+
+  const pct = Math.min(100, Math.round((completedCount / allSections.length) * 100));
+  return (
+    <div className="course-progress" title={`${pct}% complete`}>
+      <div className="course-progress-fill" style={{ width: `${pct}%` }} />
+    </div>
+  );
+}
+
 export default function SectionPage() {
+  const dp = useDataProvider();
   const { courseId, chapterId, sectionId } = useParams<{
     courseId: string;
     chapterId: string;
@@ -39,21 +68,18 @@ export default function SectionPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const [modRes, secRes, recapRes] = await Promise.all([
-        fetch(apiUrl(`course/${courseId}`)),
-        fetch(apiUrl(`content/${courseId}/${sectionId}`)),
-        fetch(apiUrl(`recap/${courseId}`)),
+      const [config, section, hasRecap] = await Promise.all([
+        dp.getCourseConfig(courseId),
+        dp.getSectionData(courseId, sectionId),
+        dp.hasRecap(courseId),
       ]);
-      if (modRes.ok) setCourseConfig(await modRes.json());
-      if (secRes.ok) setSectionData(await secRes.json());
-      if (recapRes.ok) {
-        const recapMeta = await recapRes.json();
-        setCourseHasRecap(recapMeta.hasRecap ?? false);
-      }
+      if (config) setCourseConfig(config);
+      if (section) setSectionData(section);
+      setCourseHasRecap(hasRecap);
       setLoading(false);
     }
     load();
-  }, [courseId, sectionId]);
+  }, [courseId, sectionId, dp]);
 
   useEffect(() => {
     setPhaseState("lesson");
@@ -63,7 +89,7 @@ export default function SectionPage() {
 
   function advanceTo(next: Phase) {
     setPhaseState(next);
-    setPhase(courseId, sectionId, next);
+    void dp.setPhase(courseId, sectionId, next);
   }
 
   function handleLessonContinue() {
@@ -79,7 +105,7 @@ export default function SectionPage() {
 
   function handleQuizComplete(score: number) {
     if (score >= 70) {
-      markSectionComplete(courseId, sectionId, score);
+      void dp.markSectionComplete(courseId, sectionId, score);
       finishSection();
     }
   }
@@ -160,16 +186,7 @@ export default function SectionPage() {
 
           <h1 className="section-title">{currentSection?.title}</h1>
 
-          {(() => {
-            const allSections = courseConfig.chapters.flatMap((c) => c.sections);
-            const completedCount = (getProgress()[courseId] as CourseProgress)?.completedSections?.length ?? 0;
-            const pct = Math.min(100, Math.round((completedCount / allSections.length) * 100));
-            return (
-              <div className="course-progress" title={`${pct}% complete`}>
-                <div className="course-progress-fill" style={{ width: `${pct}%` }} />
-              </div>
-            );
-          })()}
+          <CourseProgressBar courseConfig={courseConfig} courseId={courseId} dp={dp} />
 
           {phase === "lesson" && (
             <LessonView

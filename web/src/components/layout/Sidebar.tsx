@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { CourseConfig } from "@/lib/types";
-import { isSectionComplete, resetCourseProgress } from "@/lib/progress";
+import { useDataProvider } from "@/lib/data";
+import type { CourseProgress } from "@/lib/types";
 import { CheckCircle2, Lock, ChevronDown, ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import { InlineLatex } from "@/components/ui/InlineLatex";
 
@@ -26,19 +27,19 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
   const [openChapters, setOpenChapters] = useState<Set<string>>(
     new Set(currentChapterId ? [currentChapterId] : [])
   );
+  const dp = useDataProvider();
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [confirmReset, setConfirmReset] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const s = new Set(
-      course.chapters
-        .flatMap((c) => c.sections)
-        .filter((sec) => isSectionComplete(course.id, sec.id))
-        .map((sec) => sec.id)
-    );
-    setCompleted(s);
-  }, [course]);
+    async function load() {
+      const progress = await dp.getProgress();
+      const cp = progress[course.id] as CourseProgress | undefined;
+      setCompleted(new Set(cp?.completedSections ?? []));
+    }
+    load();
+  }, [course, dp]);
 
   function toggle(chapterId: string) {
     setOpenChapters((prev) => {
@@ -56,9 +57,9 @@ export function Sidebar({ course, currentSectionId, dir, hasRecap, isRecap, reca
     return !completed.has(allSectionIds[idx - 1]);
   }
 
-  function handleReset() {
+  async function handleReset() {
     if (!confirmReset) { setConfirmReset(true); return; }
-    resetCourseProgress(course.id);
+    await dp.resetCourseProgress(course.id);
     setCompleted(new Set());
     setConfirmReset(false);
     const firstChapter = course.chapters[0];

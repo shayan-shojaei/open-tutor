@@ -2,25 +2,24 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getProgress } from "@/lib/progress";
+import { useDataProvider } from "@/lib/data";
 import type { CourseConfig } from "@/lib/types";
-import { apiUrl } from "@/lib/api-url";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
+  const dp = useDataProvider();
   const router = useRouter();
 
   useEffect(() => {
     async function redirect() {
-      const res = await fetch(apiUrl(`course/${params.courseId}`));
-      if (!res.ok) { router.replace("/"); return; }
-      const config: CourseConfig = await res.json();
+      const config = await dp.getCourseConfig(params.courseId);
+      if (!config) { router.replace("/"); return; }
       if (!config.chapters[0]?.sections[0]) { router.replace("/"); return; }
 
       const allSections = config.chapters.flatMap((c) =>
         c.sections.map((s) => ({ ...s, chapterId: c.id }))
       );
 
-      const progress = getProgress();
+      const progress = await dp.getProgress();
       const courseProgress = progress[params.courseId] as import("@/lib/types").CourseProgress | undefined;
       const completed = new Set(courseProgress?.completedSections ?? []);
 
@@ -36,7 +35,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
       router.replace(`/learn/${params.courseId}/${target.chapterId}/${target.id}`);
     }
     redirect();
-  }, [params.courseId, router]);
+  }, [params.courseId, router, dp]);
 
   return null;
 }
