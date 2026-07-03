@@ -19,8 +19,8 @@ RESET := \033[0m
 
 .DEFAULT_GOAL := help
 
-.PHONY: help build build-cli build-web web-deps test sync-skills \
-        dev dev-local dev-hosted infra-up infra-down \
+.PHONY: help build build-cli build-web build-shared web-deps test sync-skills \
+        dev dev-local \
         package deploy-web init local-deploy start start-fg stop install clean
 
 help: ## Show available targets
@@ -48,13 +48,17 @@ build-cli: sync-skills ## Compile → cli/tutor
 	cd $(CLI_DIR) && go build $(LDFLAGS) -o tutor .
 	@echo "$(GREEN)✓ cli/tutor$(RESET)"
 
-build-web: web-deps ## Build Next.js standalone output (web/.next/standalone/)
+build-web: build-shared ## Build Next.js standalone output (web/.next/standalone/)
 	@echo "$(BOLD)Building web app...$(RESET)"
-	cd $(WEB_DIR) && npm run build
+	cd $(WEB_DIR) && pnpm build
 	@echo "$(GREEN)✓ web/.next/standalone$(RESET)"
 
-web-deps: ## Install web npm dependencies
-	@cd $(WEB_DIR) && npm install --silent
+build-shared: web-deps ## Build @open-tutor/shared → dist/ (web imports its compiled dist)
+	@echo "$(BOLD)Building @open-tutor/shared...$(RESET)"
+	pnpm --filter ./packages/shared build
+
+web-deps: ## Install workspace dependencies (pnpm)
+	@pnpm install --silent
 
 # ─── Test ─────────────────────────────────────────────────────────────────────
 
@@ -66,23 +70,9 @@ test: ## Run Go tests
 
 dev: dev-local ## Alias for dev-local
 
-dev-local: ## Local mode — web only (filesystem + localStorage, no auth)
+dev-local: build-shared ## Local mode — web only (filesystem + localStorage, no auth)
 	@echo "$(BOLD)Starting web [local mode] on http://localhost:$(PORT)$(RESET)"
-	cd $(WEB_DIR) && PORT=$(PORT) npm run dev
-
-dev-hosted: ## Hosted mode — build and start all services in Docker (web :3000, server :3001)
-	@echo "$(BOLD)Starting hosted stack (docker compose)$(RESET)"
-	@echo "  web  → http://localhost:3000"
-	@echo "  api  → http://localhost:3001"
-	docker compose up --build
-
-infra-up: ## Start only infra containers (Postgres, Redis, MinIO) in the background
-	@echo "$(BOLD)Starting infrastructure...$(RESET)"
-	docker compose up -d postgres redis minio minio-init
-	@echo "$(GREEN)✓ postgres  redis  minio (internal network only)$(RESET)"
-
-infra-down: ## Stop all containers
-	docker compose down
+	cd $(WEB_DIR) && PORT=$(PORT) pnpm dev
 
 # ─── Local install (full flow without a real GitHub release) ──────────────────
 
