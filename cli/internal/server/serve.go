@@ -12,7 +12,11 @@ import (
 func Start(appDir, modulesDir string, port int, detach bool, onReady func()) error {
 	serverJS := filepath.Join(appDir, "server.js")
 	if _, err := os.Stat(serverJS); os.IsNotExist(err) {
-		return fmt.Errorf("web app not installed — run `tutor install` first")
+		// v1+ tarballs keep the monorepo layout: web/server.js next to node_modules/
+		serverJS = filepath.Join(appDir, "web", "server.js")
+		if _, err := os.Stat(serverJS); os.IsNotExist(err) {
+			return fmt.Errorf("web app not installed — run `tutor install` first")
+		}
 	}
 
 	node, err := exec.LookPath("node")

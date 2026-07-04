@@ -12,29 +12,45 @@ jobs:
   build-web:
     name: Build & publish web app
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: web/package-lock.json
+          cache: pnpm
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install dependencies (hoisted)
+        # node-linker=hoisted gives an npm-style symlink-free node_modules, so the
+        # standalone tarball contains plain files the CLI can extract on any platform.
+        # pnpm 9 reads the setting from .npmrc, pnpm 10+ from pnpm-workspace.yaml.
+        run: |
+          echo "node-linker=hoisted" >> .npmrc
+          printf '\nnodeLinker: hoisted\n' >> pnpm-workspace.yaml
+          pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter ./packages/shared build
+
+      - name: Build web app
+        run: pnpm build
+        working-directory: web
 
       - name: Package standalone output
+        working-directory: web
         run: |
-          cp -r .next/static .next/standalone/.next/static
-          [ -d public ] && cp -r public .next/standalone/public || mkdir -p .next/standalone/public
+          # Monorepo standalone layout: .next/standalone/{web/server.js, node_modules/}.
+          # The CLI (v1+) looks for server.js at web/server.js.
+          cp -r .next/static .next/standalone/web/.next/static
+          [ -d public ] && cp -r public .next/standalone/web/public || mkdir -p .next/standalone/web/public
           tar -czf ../web-standalone-${{ github.ref_name }}.tar.gz -C .next/standalone .
 
       - name: Generate checksum
-        run: sha256sum ../web-standalone-${{ github.ref_name }}.tar.gz | awk '{print $1}' > ../web-standalone-${{ github.ref_name }}.sha256
+        run: sha256sum web-standalone-${{ github.ref_name }}.tar.gz | awk '{print $1}' > web-standalone-${{ github.ref_name }}.sha256
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
