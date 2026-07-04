@@ -1267,3 +1267,46 @@ html, body { overflow-x: clip; }
 .link:hover { text-decoration: underline; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { animation: spin .8s linear infinite; }
+
+/* ── Studio (authoring) ─────────────────────────────── */
+.studio-group { margin-bottom: 36px; }
+.studio-group-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 16px; font-weight: 650; color: var(--ink);
+  margin: 0 0 14px;
+}
+.studio-empty { color: var(--ink-3); font-size: 14px; margin: 0; }
+.studio-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.studio-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 10px 14px; box-shadow: var(--shadow-sm);
+}
+.studio-row-main { display: flex; align-items: baseline; gap: 10px; flex: 1; min-width: 0; text-decoration: none; color: inherit; }
+.studio-row-title { font-weight: 550; }
+.studio-row-id { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+.studio-row-btn { display: inline-flex; align-items: center; padding: 7px 9px; }
+.studio-danger:hover { color: var(--bad); border-color: var(--bad); background: var(--bad-tint); }
+.studio-new {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 18px; margin-bottom: 40px; box-shadow: var(--shadow-sm);
+}
+.studio-new-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 16px; margin-bottom: 14px; }
+.studio-new-grid label, .studio-field {
+  display: flex; flex-direction: column; gap: 5px;
+  font-size: 13px; font-weight: 550; color: var(--ink-2);
+}
+.studio-new-desc { grid-column: 1 / -1; }
+.studio-new input, .studio-new select,
+.studio-form input, .studio-form select, .studio-form textarea {
+  font: inherit; font-size: 14px; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--line-2);
+  border-radius: var(--r-sm); padding: 8px 10px; outline: none;
+}
+.studio-new input:focus, .studio-new select:focus,
+.studio-form input:focus, .studio-form select:focus, .studio-form textarea:focus { border-color: var(--accent); }
+.studio-invalid, .studio-new input.studio-invalid { border-color: var(--bad) !important; }
+.studio-error { color: var(--bad); font-size: 14px; margin: 0 0 12px; }
+@media (max-width: 720px) {
+  .studio-new-grid { grid-template-columns: 1fr; }
+}
