@@ -178,3 +178,23 @@ export function useStudioDoc<T>(
 
   return { value, setValue, loaded, missing, dirty, saving, conflict, save, reload: load };
 }
+
+/** The value-type-agnostic surface of a StudioDoc (StudioDoc<T> is invariant in T). */
+export type DocHandle = Pick<
+  StudioDoc<unknown>,
+  "dirty" | "saving" | "conflict" | "loaded" | "save" | "reload"
+>;
+
+export function ConflictBanner({ doc, what }: { doc: DocHandle; what: string }) {
+  if (!doc.conflict) return null;
+  return (
+    <div className="studio-conflict">
+      <span>
+        The {what} changed on disk since you loaded it (another tab, a Claude skill, or a hand
+        edit).
+      </span>
+      <button className="btn-ghost" onClick={() => doc.save(true)}>Overwrite</button>
+      <button className="btn-ghost" onClick={() => doc.reload()}>Reload theirs</button>
+    </div>
+  );
+}

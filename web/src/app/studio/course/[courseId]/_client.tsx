@@ -14,7 +14,12 @@ import {
 } from "lucide-react";
 import type { CourseConfig, Problem, QuizQuestion } from "@/lib/types";
 import { useDataProvider } from "@/lib/data";
-import { useStudioDoc, slugify, type StudioDoc } from "@/components/studio/useStudioDoc";
+import {
+  useStudioDoc,
+  slugify,
+  ConflictBanner,
+  type DocHandle,
+} from "@/components/studio/useStudioDoc";
 import { MarkdownEditor } from "@/components/studio/MarkdownEditor";
 import {
   ItemListEditor,
@@ -38,23 +43,6 @@ function move<T>(arr: T[], from: number, to: number): T[] {
   const [item] = next.splice(from, 1);
   next.splice(to, 0, item);
   return next;
-}
-
-/** The value-type-agnostic surface of a StudioDoc (StudioDoc<T> is invariant in T). */
-type DocHandle = Pick<StudioDoc<unknown>, "dirty" | "saving" | "conflict" | "loaded" | "save" | "reload">;
-
-function ConflictBanner({ doc, what }: { doc: DocHandle; what: string }) {
-  if (!doc.conflict) return null;
-  return (
-    <div className="studio-conflict">
-      <span>
-        The {what} changed on disk since you loaded it (another tab, a Claude skill, or a hand
-        edit).
-      </span>
-      <button className="btn-ghost" onClick={() => doc.save(true)}>Overwrite</button>
-      <button className="btn-ghost" onClick={() => doc.reload()}>Reload theirs</button>
-    </div>
-  );
 }
 
 export default function CourseEditor({ courseId }: { courseId: string }) {
