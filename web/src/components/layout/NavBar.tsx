@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Flame, Zap, BarChart2, GraduationCap, Layers, ListChecks } from "lucide-react";
+import { BookOpen, Flame, Zap, BarChart2, GraduationCap, Layers, ListChecks, PenLine } from "lucide-react";
 import { useFontSize } from "@/lib/useFontSize";
 import { useEffect, useState } from "react";
 import { isStreakAtRisk } from "@/lib/gamification";
@@ -41,9 +41,11 @@ function GamificationBadge() {
 
 export default function NavBar() {
   const pathname = usePathname();
+  const dp = useDataProvider();
   const { currentSize, canDecrease, canIncrease, decrease, increase } = useFontSize();
 
   const isCourses = pathname === "/" || pathname.startsWith("/learn");
+  const isStudio = pathname.startsWith("/studio");
   const isFlashCards = pathname.startsWith("/flashcards");
   const isQuizzes = pathname.startsWith("/quizzes");
   const isStats = pathname.startsWith("/stats");
@@ -73,6 +75,12 @@ export default function NavBar() {
             <BarChart2 size={14} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
             Stats
           </Link>
+          {dp.canEdit && (
+            <Link href="/studio" className={`nav-pill${isStudio ? " is-active" : ""}`}>
+              <PenLine size={14} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
+              Studio
+            </Link>
+          )}
         </nav>
         <div className="navbar-right">
           <GamificationBadge />

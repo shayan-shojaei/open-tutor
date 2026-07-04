@@ -1,4 +1,4 @@
-import type { DataProvider } from "./DataProvider";
+import type { DataProvider, StudioDocRef, SaveResult, ModuleType } from "./DataProvider";
 import type {
   CourseSummary,
   CourseConfig,
@@ -41,7 +41,87 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   }
 }
 
+/** URL under /api/studio/ for a doc ref — mirrors the server's resolveDoc table. */
+function refToPath(ref: StudioDocRef): string {
+  switch (ref.kind) {
+    case "course-config": return `course/${ref.courseId}/config`;
+    case "lesson": return `course/${ref.courseId}/section/${ref.sectionId}/lesson`;
+    case "section-quiz": return `course/${ref.courseId}/section/${ref.sectionId}/quiz`;
+    case "problems": return `course/${ref.courseId}/section/${ref.sectionId}/problems`;
+    case "recap-lesson": return `course/${ref.courseId}/recap/${ref.sectionId}/lesson`;
+    case "recap-quiz": return `course/${ref.courseId}/recap/${ref.sectionId}/quiz`;
+    case "deck-config": return `flashcards/${ref.deckId}/config`;
+    case "cards": return `flashcards/${ref.deckId}/cards`;
+    case "quiz-config": return `quizzes/${ref.quizId}/config`;
+    case "quiz-questions": return `quizzes/${ref.quizId}/questions`;
+  }
+}
+
 export class LocalProvider implements DataProvider {
+  // ── Studio (delegates to /api/studio, local builds only) ──
+
+  readonly canEdit = process.env.NEXT_PUBLIC_DEMO !== "true";
+
+  async loadStudioDoc(ref: StudioDocRef): Promise<{ data: unknown; mtime: number | null } | null> {
+    return fetchJson(`/api/studio/${refToPath(ref)}`);
+  }
+
+  async saveStudioDoc(
+    ref: StudioDocRef,
+    data: unknown,
+    expectedMtime: number | null
+  ): Promise<SaveResult> {
+    const res = await fetch(`/api/studio/${refToPath(ref)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data, expectedMtime }),
+    });
+    const body = await res.json();
+    if (res.status === 409) return { ok: false, conflict: true, mtime: body.mtime };
+    if (!res.ok) throw new Error(body.error ?? `Save failed (${res.status})`);
+    return { ok: true, mtime: body.mtime };
+  }
+
+  async createModule(type: ModuleType, config: object): Promise<{ ok: boolean; error?: string }> {
+    const res = await fetch("/api/studio/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, config }),
+    });
+    if (res.ok) return { ok: true };
+    return { ok: false, error: (await res.json()).error ?? `Create failed (${res.status})` };
+  }
+
+  private async studioDelete(path: string): Promise<void> {
+    const res = await fetch(`/api/studio/${path}`, { method: "DELETE" });
+    if (!res.ok) throw new Error((await res.json()).error ?? `Delete failed (${res.status})`);
+  }
+
+  async deleteModule(type: ModuleType, id: string): Promise<void> {
+    return this.studioDelete(`${type}/${id}`);
+  }
+
+  async deleteSection(courseId: string, sectionId: string): Promise<void> {
+    return this.studioDelete(`course/${courseId}/section/${sectionId}`);
+  }
+
+  async deleteChapter(courseId: string, chapterId: string): Promise<void> {
+    return this.studioDelete(`course/${courseId}/chapter/${chapterId}`);
+  }
+
+  async deleteRecap(courseId: string, sectionId: string): Promise<void> {
+    return this.studioDelete(`course/${courseId}/recap/${sectionId}`);
+  }
+
+  async uploadCourseImage(courseId: string, file: File): Promise<{ url: string }> {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch(`/api/studio/course/${courseId}/image`, { method: "POST", body: form });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error ?? `Upload failed (${res.status})`);
+    return body;
+  }
+
   // ── Content (delegates to local Next.js API routes) ──
 
   async getCourseSummaries(): Promise<CourseSummary[]> {

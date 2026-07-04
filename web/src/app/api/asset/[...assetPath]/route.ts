@@ -25,7 +25,7 @@ export async function GET(
   // Prevent directory traversal
   const resolved = path.resolve(filePath);
   const modulesRoot = path.resolve(getModulesDir());
-  if (!resolved.startsWith(modulesRoot)) {
+  if (!resolved.startsWith(modulesRoot + path.sep)) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 

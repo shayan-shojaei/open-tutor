@@ -16,7 +16,7 @@ Commons. For each section, you identify concepts that benefit from a visual
 (graph, diagram, geometry, architecture) and search for a real diagram on
 Wikimedia Commons. Concepts with no suitable Wikimedia image are skipped.
 
-Images are saved to `~/.tutor/modules/api/asset/courses/{courseId}/images/`
+Images are saved to `~/.tutor/modules/courses/{courseId}/images/`
 and referenced in markdown as `![caption](/api/asset/courses/{courseId}/images/{filename})`.
 
 ---
@@ -67,7 +67,7 @@ Parse the JSON response. For each result with a title like `File:*.svg`:
   ```
 - Download the SVG content (use `-L` to follow redirects).
 - Check that it is a real SVG (starts with `<svg` or `<?xml`).
-- If valid: save to `~/.tutor/modules/api/asset/courses/{courseId}/images/{slug}.svg` and proceed to Step 3b.
+- If valid: save to `~/.tutor/modules/courses/{courseId}/images/{slug}.svg` and proceed to Step 3b.
 
 If no suitable image is found on Wikimedia Commons, skip this concept and move on.
 
