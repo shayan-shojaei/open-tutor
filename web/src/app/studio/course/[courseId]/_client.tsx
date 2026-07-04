@@ -16,6 +16,12 @@ import type { CourseConfig, Problem, QuizQuestion } from "@/lib/types";
 import { useDataProvider } from "@/lib/data";
 import { useStudioDoc, slugify, type StudioDoc } from "@/components/studio/useStudioDoc";
 import { MarkdownEditor } from "@/components/studio/MarkdownEditor";
+import {
+  ItemListEditor,
+  ProblemForm,
+  QuizQuestionForm,
+  nextId,
+} from "@/components/studio/ItemListEditor";
 
 type Tab = "lesson" | "problems" | "quiz" | "recap" | "recap-quiz";
 const TABS: { id: Tab; label: string }[] = [
@@ -182,6 +188,19 @@ export default function CourseEditor({ courseId }: { courseId: string }) {
     }, (e) => window.alert(String(e)));
   }
 
+  // Recap exists once its .md is on disk (or drafted); the two recap tabs share this.
+  const recapMissing =
+    (tab === "recap" || tab === "recap-quiz") && recapLesson.missing && !recapLesson.dirty;
+
+  function removeRecap() {
+    if (!selected) return;
+    if (!window.confirm("Delete this section's recap (summary and recap quiz)?")) return;
+    dp.deleteRecap(courseId, selected).then(() => {
+      recapLesson.reload();
+      recapQuiz.reload();
+    }, (e) => window.alert(String(e)));
+  }
+
   const activeDoc: DocHandle =
     tab === "lesson" ? lesson : tab === "problems" ? problems : tab === "quiz" ? quiz : tab === "recap" ? recapLesson : recapQuiz;
 
@@ -302,8 +321,75 @@ export default function CourseEditor({ courseId }: { courseId: string }) {
               courseId={courseId}
               dir={dir}
             />
+          ) : tab === "problems" ? (
+            <ItemListEditor
+              items={problems.value ?? []}
+              onChange={problems.setValue}
+              newItem={(items) => ({ id: nextId(items, "p"), statement: "", solution: "", answer: "" })}
+              itemLabel={(_, i) => `Problem ${i + 1}`}
+              addLabel="Add problem"
+              renderItem={(item, update) => <ProblemForm item={item} update={update} dir={dir} />}
+            />
+          ) : tab === "quiz" ? (
+            <ItemListEditor
+              items={quiz.value ?? []}
+              onChange={quiz.setValue}
+              newItem={(items) => ({
+                id: nextId(items, "q"),
+                type: "multiple-choice" as const,
+                question: "",
+                options: ["", "", "", ""],
+                correctIndex: 0,
+                explanation: "",
+              })}
+              itemLabel={(_, i) => `Question ${i + 1}`}
+              addLabel="Add question"
+              renderItem={(item, update) => <QuizQuestionForm item={item} update={update} dir={dir} />}
+            />
+          ) : recapMissing ? (
+            <div className="studio-recap-empty">
+              <p className="studio-empty">
+                No recap for this section yet. A recap is a condensed summary with its own quiz,
+                shown under the course&apos;s Recap button.
+              </p>
+              <button
+                className="btn-ghost"
+                onClick={() => {
+                  recapLesson.setValue(`# ${selectedMeta.title} — Recap\n\n`);
+                  setTab("recap");
+                }}
+              >
+                Create recap
+              </button>
+            </div>
+          ) : tab === "recap" ? (
+            <>
+              <MarkdownEditor
+                value={recapLesson.value ?? ""}
+                onChange={recapLesson.setValue}
+                courseId={courseId}
+                dir={dir}
+              />
+              <button className="btn-ghost studio-danger studio-recap-delete" onClick={removeRecap}>
+                <Trash2 size={14} /> Delete this section&apos;s recap
+              </button>
+            </>
           ) : (
-            <p className="studio-empty">Coming next.</p>
+            <ItemListEditor
+              items={recapQuiz.value ?? []}
+              onChange={recapQuiz.setValue}
+              newItem={(items) => ({
+                id: nextId(items, "rq"),
+                type: "multiple-choice" as const,
+                question: "",
+                options: ["", "", "", ""],
+                correctIndex: 0,
+                explanation: "",
+              })}
+              itemLabel={(_, i) => `Question ${i + 1}`}
+              addLabel="Add question"
+              renderItem={(item, update) => <QuizQuestionForm item={item} update={update} dir={dir} />}
+            />
           )}
         </main>
       </div>

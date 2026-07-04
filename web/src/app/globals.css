@@ -1398,6 +1398,35 @@ html, body { overflow-x: clip; }
   padding: 8px 12px; background: var(--paper); font-size: 14px;
 }
 
+/* Item list editor (quiz questions, problems, cards) */
+.studio-items { display: flex; flex-direction: column; gap: 14px; }
+.studio-item {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 14px 16px; box-shadow: var(--shadow-sm);
+}
+.studio-item-head { display: flex; align-items: center; gap: 8px; }
+.studio-item-label { font-weight: 650; font-size: 14px; }
+.studio-item-head button {
+  display: inline-flex; padding: 4px; color: var(--ink-3); border-radius: var(--r-sm);
+}
+.studio-item-head button:hover:not(:disabled) { background: var(--surface-sunk); color: var(--ink); }
+.studio-item-head button:disabled { opacity: .3; cursor: default; }
+.studio-item-head button.studio-danger:hover { background: var(--bad-tint); color: var(--bad); }
+.studio-item-add { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; }
+.studio-options { display: flex; flex-direction: column; gap: 6px; }
+.studio-options-label { font-size: 13px; font-weight: 550; color: var(--ink-2); }
+.studio-option { display: flex; align-items: flex-start; gap: 8px; }
+.studio-option input[type="radio"] { margin-top: 10px; accent-color: var(--accent); }
+.studio-option-field { flex: 1; min-width: 0; }
+.studio-option > button {
+  display: inline-flex; padding: 4px; margin-top: 6px; color: var(--ink-3); border-radius: var(--r-sm);
+}
+.studio-option > button:hover:not(:disabled) { background: var(--bad-tint); color: var(--bad); }
+.studio-option > button:disabled { opacity: .3; cursor: default; }
+.studio-recap-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.studio-recap-delete { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; }
+
 @media (max-width: 960px) {
   .studio-editor { grid-template-columns: 1fr; }
   .studio-rail { position: static; }
