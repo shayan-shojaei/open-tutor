@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Flame, Zap, BarChart2, GraduationCap, Layers, ListChecks, PenLine } from "lucide-react";
+import { BookOpen, Flame, Zap, BarChart2, GraduationCap, Layers, ListChecks, PenLine, Sun, Moon } from "lucide-react";
 import { useFontSize } from "@/lib/useFontSize";
+import { useTheme } from "@/lib/useTheme";
 import { useEffect, useState } from "react";
 import { isStreakAtRisk } from "@/lib/gamification";
 import { useDataProvider } from "@/lib/data";
@@ -43,6 +44,7 @@ export default function NavBar() {
   const pathname = usePathname();
   const dp = useDataProvider();
   const { currentSize, canDecrease, canIncrease, decrease, increase } = useFontSize();
+  const { theme, toggle } = useTheme();
 
   const isCourses = pathname === "/" || pathname.startsWith("/learn");
   const isStudio = pathname.startsWith("/studio");
@@ -84,6 +86,9 @@ export default function NavBar() {
         </nav>
         <div className="navbar-right">
           <GamificationBadge />
+          <button onClick={toggle} className="theme-toggle" aria-label="Toggle dark mode">
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           {isLearnPage && (
             <div className="font-size-controls">
               <button onClick={decrease} disabled={!canDecrease} aria-label="Decrease font size">A−</button>

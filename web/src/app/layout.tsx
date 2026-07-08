@@ -38,6 +38,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       data-corners="soft"
       className={`${serif.variable} ${sans.variable} ${mono.variable} ${vazirmatn.variable}`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("tutor-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="antialiased">
         <DataProviderWrapper>
           <ConditionalNavBar />

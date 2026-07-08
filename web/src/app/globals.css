@@ -30,6 +30,26 @@
   --shadow-lg: 0 6px 14px rgba(64,46,28,.07), 0 28px 60px -22px rgba(64,46,28,.30);
 }
 
+[data-theme="dark"] {
+  --paper: oklch(0.22 0.014 65);
+  --surface: oklch(0.27 0.016 65);
+  --surface-sunk: oklch(0.19 0.014 65);
+  --ink: oklch(0.93 0.012 80);
+  --ink-2: oklch(0.78 0.016 78);
+  --ink-3: oklch(0.6 0.018 75);
+  --line: oklch(0.35 0.016 65);
+  --line-2: oklch(0.42 0.018 65);
+
+  --good: oklch(0.72 0.12 150);
+  --good-tint: oklch(0.3 0.05 150);
+  --bad: oklch(0.68 0.16 27);
+  --bad-tint: oklch(0.32 0.06 27);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.25), 0 1px 1px rgba(0,0,0,.2);
+  --shadow: 0 2px 4px rgba(0,0,0,.3), 0 10px 28px -12px rgba(0,0,0,.5);
+  --shadow-lg: 0 6px 14px rgba(0,0,0,.35), 0 28px 60px -22px rgba(0,0,0,.6);
+}
+
 [data-accent="clay"] {
   --accent: oklch(0.565 0.13 45);
   --accent-press: oklch(0.5 0.13 45);
@@ -50,6 +70,23 @@
   --accent-tint: oklch(0.95 0.035 30);
   --accent-line: oklch(0.86 0.07 28);
   --on-accent: oklch(0.985 0.012 40);
+}
+
+/* accent-tint/-line are tuned for a light paper background; darken them so
+   badges don't render as light-mode patches against the dark palette. */
+[data-theme="dark"] {
+  --accent-tint: color-mix(in oklch, var(--accent) 20%, var(--surface));
+  --accent-line: color-mix(in oklch, var(--accent) 45%, var(--surface));
+}
+
+/* .gamif-streak hardcodes light-mode colors instead of using tokens; override directly. */
+[data-theme="dark"] .gamif-streak {
+  background: oklch(0.3 0.06 55); color: oklch(0.8 0.1 50);
+  border-color: oklch(0.42 0.08 55);
+}
+[data-theme="dark"] .gamif-streak.at-risk {
+  background: oklch(0.32 0.07 75); color: oklch(0.82 0.11 60);
+  border-color: oklch(0.44 0.09 65);
 }
 
 [data-corners="soft"] { --r-lg: 20px; --r: 14px; --r-sm: 10px; --r-pill: 999px; }
@@ -110,7 +147,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   white-space: nowrap;
 }
 .nav-pill:hover { color: var(--ink); background: var(--surface-sunk); }
-.nav-pill.is-active { background: var(--ink); color: var(--paper); }
+.nav-pill.is-active { background: var(--accent); color: var(--on-accent); }
 
 .font-size-controls { display: flex; gap: 4px; margin-inline-start: auto; }
 .font-size-controls button {
@@ -127,6 +164,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-self: center;
 }
 @media (max-width: 880px) { .font-size-controls { display: none; } }
+
+.theme-toggle {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-2); background: none; border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: 6px; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.theme-toggle:hover { background: var(--surface-sunk); color: var(--ink); }
 
 /* ===================== CATALOG PAGES ===================== */
 .page { max-width: 1060px; margin: 0 auto; }
