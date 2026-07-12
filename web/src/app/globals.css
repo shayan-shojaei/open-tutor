@@ -460,8 +460,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .md-caption { font-size: 0.82rem; color: var(--ink-3); margin-top: 8px; font-style: italic; line-height: 1.4; }
 .md strong { font-weight: 700; color: var(--ink); }
 .math-err { color: var(--bad); font-family: var(--mono); font-size: .85em; }
-.katex { font-size: 1.04em; }
-.katex-display { margin: 0; }
+.katex { font-size: 1.04em; white-space: nowrap; }
+.katex-display { margin: 0; overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
 
 /* Prose RTL adjustments */
 .prose-rtl { text-align: right; }
